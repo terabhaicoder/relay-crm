@@ -1,0 +1,31 @@
+.context { color: var(--ink, #24372e); min-width: 0; }
+.intro { margin-bottom: 22px; }
+.intro h3 { margin: 0 0 7px; font-family: Georgia, 'Times New Roman', serif; font-size: 24px; font-weight: 400; letter-spacing: -.4px; }
+.intro p { margin: 0; font-size: 13px; line-height: 1.6; color: #58685e; }
+.summary { margin: 0 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding-bottom: 20px; border-bottom: 1px solid #e4e8e1; }
+.summary div:last-child { grid-column: 1 / -1; display: flex; gap: 10px; align-items: baseline; }
+.summary dt { font-size: 12px; color: #58685e; line-height: 1.5; }
+.summary dd { margin: 6px 0 0; font-size: 23px; font-variant-numeric: tabular-nums; font-weight: 600; overflow-wrap: anywhere; }
+.summary div:last-child dd { font-size: 15px; margin: 0; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+.actions button { font-size: 12px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 5px; padding-bottom: 12px; border-bottom: 1px solid #e4e8e1; }
+.tabs button { border: 0; border-radius: 5px; background: transparent; color: #58685e; padding: 9px 10px; min-height: 38px; font-size: 12px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.tabs button:hover { background: #f0f4ed; }
+.tabs button[aria-selected='true'] { background: #e8f0e1; color: #163e30; font-weight: 600; }
+.tabs span { font-size: 11px; font-variant-numeric: tabular-nums; }
+.panel { min-height: 130px; }
+.records { list-style: none; margin: 0; padding: 0; }
+.records li + li { border-top: 1px solid #e4e8e1; }
+.records a, .unlinked { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 15px 3px; text-decoration: none; color: inherit; }
+.records a:hover { color: #163e30; background: #f7f8f5; }
+.records span { min-width: 0; }
+.records strong { display: block; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.records small { display: block; font-size: 12px; line-height: 1.6; color: #58685e; overflow-wrap: anywhere; margin-top: 4px; }
+.records svg { flex-shrink: 0; }
+.state { margin: 0; padding: 23px 0; color: #58685e; font-size: 13px; line-height: 1.6; }
+.error { color: #9b3c25; padding: 12px 0 20px; font-size: 13px; }
+.pagination { padding: 15px 0; display: flex; gap: 7px; align-items: center; flex-wrap: wrap; font-size: 12px; color: #58685e; }
+.pagination span { flex: 1; }
+.pagination button { font-size: 12px; }
+@media (max-width: 400px) { .summary { grid-template-columns: 1fr; gap: 15px; } .intro h3 { font-size: 22px; } }

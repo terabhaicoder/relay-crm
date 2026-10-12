@@ -1,0 +1,52 @@
+[project]
+name = "indian-smb-erp"
+version = "0.1.0"
+description = "Modular ERP for Indian SMBs"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "fastapi==0.115.0",
+  "uvicorn==0.49.0",
+  "sqlalchemy==2.0.52",
+  "pydantic==2.13.4",
+  "pydantic-settings==2.14.2",
+  "redis==5.1.1",
+]
+
+[project.optional-dependencies]
+erp = ["asyncpg==0.30.0", "alembic==1.16.2", "celery[redis]==5.5.3"]
+
+[dependency-groups]
+dev = [
+  "pytest==9.1.1",
+  "pytest-asyncio==1.4.0",
+  "httpx==0.28.1",
+  "ruff==0.15.20",
+  "mypy==2.3.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "app/modules"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = ["integration: requires a running PostgreSQL 16 and Redis"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["app"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["celery", "celery.*"]
+ignore_missing_imports = true

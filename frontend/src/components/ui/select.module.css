@@ -1,0 +1,23 @@
+.root { display: block; width: 100%; min-width: 0; position: relative; }
+.trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid #dce2d9; border-radius: 7px; background: var(--surface, #fff); color: var(--ink, #24372e); font: inherit; font-weight: 400; text-align: left; cursor: pointer; }
+.trigger:hover:not(:disabled) { border-color: #9eaf9e; background: #fafcf9; }
+.trigger:focus-visible { outline: 3px solid #416d49; outline-offset: 2px; }
+.trigger[aria-expanded="true"] { border-color: #52745a; }
+.trigger[aria-invalid="true"] { border-color: #ac443d; }
+.trigger:disabled { opacity: .55; cursor: not-allowed; background: #f5f6f3; }
+.value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chevron { width: 16px; height: 16px; flex: 0 0 16px; color: #64776a; transition: transform 120ms ease; }
+.trigger[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+.native { display: none !important; }
+.popup { position: fixed; z-index: 120; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain; padding: 6px; border-radius: 9px; background: #fff; color: #24372e; box-shadow: 0 8px 32px #163e3030; scrollbar-width: thin; scrollbar-color: #b9c8b6 transparent; }
+.option { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; padding: 9px 10px; box-sizing: border-box; border-radius: 5px; font-size: 13px; font-weight: 400; line-height: 20px; cursor: pointer; overflow-wrap: anywhere; }
+.option[data-active="true"] { background: #edf3e8; color: #163e30; }
+.option[aria-selected="true"] { font-weight: 600; color: #163e30; }
+.option[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.option svg { width: 16px; height: 16px; flex: 0 0 16px; }
+.empty { padding: 12px; font-size: 13px; color: #58685e; }
+:global(label) > .root { margin-top: 7px; }
+:global(.toolbar-right) > .root { width: auto; max-width: 220px; }
+:global(.toolbar-right) > .root .trigger { min-height: 38px; font-size: 11px; }
+@media (max-width: 640px) { .trigger { font-size: 16px; } .option { min-height: 44px; } :global(.toolbar-right) > .root { max-width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .chevron { transition: none; } }

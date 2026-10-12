@@ -1,0 +1,41 @@
+.members { color: #24372e; min-width: 0; }
+.intro h3 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 24px; letter-spacing: -.4px; margin: 0 0 8px; }
+.intro p { color: #58685e; font-size: 13px; line-height: 1.6; margin: 0 0 22px; }
+.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 0; padding-bottom: 12px; }
+.summary dt { color: #58685e; font-size: 12px; line-height: 1.5; }
+.summary dd { font-size: 23px; font-weight: 600; margin: 7px 0 0; font-variant-numeric: tabular-nums; }
+.summary dd span { font-size: 13px; font-weight: 400; color: #58685e; }
+.caption { color: #58685e; font-size: 12px; line-height: 1.6; margin: 7px 0 0; }
+.add { margin: 24px 0; border-top: 1px solid #e4e8e1; border-bottom: 1px solid #e4e8e1; padding: 21px 0; }
+.members h4 { font-size: 14px; margin: 0 0 14px; font-weight: 600; }
+.searchControls { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 10px; }
+.searchControls label { display: flex; flex-direction: column; gap: 7px; font-size: 12px; color: #58685e; min-width: 0; }
+.searchControls input { min-width: 0; width: 100%; height: 42px; border: 1px solid #dfe5dd; border-radius: 7px; background: #fff; color: #24372e; padding: 10px 12px; font-size: 13px; }
+.results { margin-top: 12px; }
+.results ul, .list ul { list-style: none; padding: 0; margin: 0; }
+.results li + li, .list li + li { border-top: 1px solid #e4e8e1; }
+.results button:not(:global(.button)) { width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: center; text-align: left; padding: 12px 4px; border: 0; background: transparent; color: #24372e; cursor: pointer; }
+.results button:hover { background: #f7f8f5; }
+.results strong, .selection strong, .memberRow strong { font-size: 13px; line-height: 1.5; display: block; overflow-wrap: anywhere; }
+.results small, .selection small, .memberRow small { display: block; margin-top: 4px; color: #58685e; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.results svg { flex-shrink: 0; }
+.selection { display: flex; align-items: center; gap: 9px; margin-top: 14px; background: #f0f5ec; padding: 12px; border-radius: 7px; }
+.selection > div { flex: 1; min-width: 0; }
+.selection button { flex-shrink: 0; font-size: 12px; }
+.list { margin-top: 24px; }
+.list h4 span { color: #58685e; font-weight: 400; padding-left: 5px; }
+.memberRow { display: flex; align-items: flex-start; gap: 12px; padding: 16px 0; }
+.memberRow a { flex: 1; min-width: 0; color: inherit; text-decoration: none; }
+.memberRow a:hover strong { text-decoration: underline; text-underline-offset: 3px; }
+.remove { min-height: 36px; padding: 6px 3px; border: 0; background: transparent; color: #735146; font-size: 12px; cursor: pointer; }
+.remove:hover { text-decoration: underline; text-underline-offset: 3px; }
+.confirm { padding: 0 0 17px; font-size: 13px; line-height: 1.6; }
+.confirm p { margin: 0 0 10px; }
+.confirm button { margin-right: 6px; font-size: 12px; }
+.error { color: #9b3c25; font-size: 13px; line-height: 1.6; }
+.success { color: #254f36; font-size: 13px; line-height: 1.6; }
+.state { padding: 17px 0; margin: 0; color: #58685e; font-size: 13px; line-height: 1.6; }
+.pagination { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; font-size: 12px; color: #58685e; margin-top: 15px; }
+.pagination span { flex: 1; }
+.pagination button { font-size: 12px; }
+@media (max-width: 400px) { .summary { gap: 10px; } .summary dd { font-size: 20px; } .searchControls { grid-template-columns: 1fr; } .searchControls input { font-size: 16px; } .selection { flex-wrap: wrap; } .intro h3 { font-size: 22px; } }

@@ -1,0 +1,36 @@
+Relay CRM — native local startup (B2B sales and support)
+
+From the repository root, after dependencies are installed:
+  python3 scripts/dev.py
+
+The app runs at http://127.0.0.1:3007 and the real API at port 8010.
+Sign up in the app to create your own company and owner account.
+SQLite data persists in backend/erp.db. Keep a backup of this file.
+Ctrl+C stops both processes. Customize ports with --port and --api-port.
+
+First-time installation on a normal networked machine:
+  python3.11 -m venv backend/.venv
+  backend/.venv/bin/python -m pip install -r backend/requirements-local.txt
+  cd frontend
+  npm install
+  cd ..
+  python3 scripts/dev.py
+
+Use Python 3.11 and a Node.js version supported by frontend/package.json.
+CRM_PYTHON can point to an already prepared Python interpreter.
+The current workspace has backend/.venv prepared from locally cached packages.
+
+Optional demo account, explicitly enabled with your own password:
+  DEMO_SEED=true DEMO_PASSWORD='choose-a-demo-password' python3 scripts/dev.py
+Its email is owner@demo.local unless DEMO_EMAIL is set. This creates a labelled
+demo company and fictional sample CRM records once; repeat starts preserve them.
+Do not enable demo seed in a production environment.
+
+No Gmail credentials are needed: Gmail/calendar sync is deferred.
+Email integration remains disconnected until actual credentials are configured.
+Local runtime uses SQLite and in-process CRM operations. It does not require
+PostgreSQL, Redis or Docker. The earlier ERP Compose stack is a separate profile.
+
+This agent environment blocks listening on local TCP ports. API integration tests
+run against the actual app and temporary SQLite files in process; start the above
+command in your own terminal to use the browser interface.

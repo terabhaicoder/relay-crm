@@ -1,0 +1,79 @@
+name: relay-crm-production
+
+# Standalone production definition: do not merge with the development Compose file.
+services:
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: sqlite:////data/relay.db
+      UPLOAD_DIR: /data/uploads
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+      CORS_ORIGINS: '["https://${DOMAIN:?Set DOMAIN to your CRM hostname}"]'
+      DEMO_SEED: "false"
+      SIGNUP_ENABLED: ${SIGNUP_ENABLED:-false}
+    volumes:
+      - crm_data:/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=4)"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    init: true
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_URL: http://api:8000
+      NEXT_TELEMETRY_DISABLED: "1"
+    expose:
+      - "3000"
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    init: true
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+  gateway:
+    image: caddy:2.11.2-alpine
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN to your CRM hostname}
+      TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL for certificate registration}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      frontend: {condition: service_healthy}
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+volumes:
+  crm_data:
+  caddy_data:
+  caddy_config:
