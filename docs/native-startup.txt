@@ -18,7 +18,7 @@ First-time installation on a normal networked machine:
 
 Use Python 3.11 and a Node.js version supported by frontend/package.json.
 CRM_PYTHON can point to an already prepared Python interpreter.
-The current workspace has backend/.venv prepared from locally cached packages.
+Install the dependencies before using an existing interpreter.
 
 Optional demo account, explicitly enabled with your own password:
   DEMO_SEED=true DEMO_PASSWORD='choose-a-demo-password' python3 scripts/dev.py
@@ -27,10 +27,9 @@ demo company and fictional sample CRM records once; repeat starts preserve them.
 Do not enable demo seed in a production environment.
 
 No Gmail credentials are needed: Gmail/calendar sync is deferred.
-Email integration remains disconnected until actual credentials are configured.
+Email remains an unsent draft workflow; a provider adapter is not implemented.
 Local runtime uses SQLite and in-process CRM operations. It does not require
 PostgreSQL, Redis or Docker. The earlier ERP Compose stack is a separate profile.
 
-This agent environment blocks listening on local TCP ports. API integration tests
-run against the actual app and temporary SQLite files in process; start the above
-command in your own terminal to use the browser interface.
+API tests run against the actual app and temporary SQLite files in process.
+Start the command above in your terminal to use the browser interface.

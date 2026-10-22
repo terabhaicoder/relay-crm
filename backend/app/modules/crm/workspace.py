@@ -21,6 +21,7 @@ from app.modules.crm.models import (
     Stage,
     StageHistory,
     Ticket,
+    now,
 )
 from app.modules.crm.repository import CRMRepository, activity_day
 from app.modules.crm.schemas import CampaignMemberInput, PipelineUpdate
@@ -443,6 +444,9 @@ def update_pipeline(
                 db.delete(stage)
         for position, item in enumerate(stages):
             updated_stage = current.get(item.id or "")
+            previous_stage_probability = (
+                updated_stage.probability if updated_stage is not None else None
+            )
             if updated_stage is None:
                 updated_stage = Stage(org_id=user.org_id, pipeline_id=pipeline_id)
                 db.add(updated_stage)
@@ -457,6 +461,33 @@ def update_pipeline(
                 item.category,
                 position,
             )
+            if (
+                item.id
+                and item.category == "open"
+                and item.probability != previous_stage_probability
+            ):
+                affected_deals = db.scalars(
+                    select(Deal).where(
+                        Deal.org_id == user.org_id,
+                        Deal.stage_id == item.id,
+                        Deal.status == "open",
+                        Deal.deleted_at.is_(None),
+                        Deal.probability != item.probability,
+                    )
+                )
+                for deal in affected_deals:
+                    previous_probability = deal.probability
+                    deal.probability = item.probability
+                    deal.version += 1
+                    deal.updated_at = now()
+                    record_event(
+                        db,
+                        user,
+                        "deals",
+                        deal,
+                        "updated",
+                        {"probability": {"old": previous_probability, "new": item.probability}},
+                    )
     if payload.name is not None:
         pipeline.name = payload.name
     pipeline.version += 1

@@ -686,6 +686,22 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "enabled",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Enabled"
+            }
           }
         ],
         "responses": {
@@ -842,15 +858,338 @@
         ],
         "summary": "Runs",
         "operationId": "runs_api_v1_automations_runs_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "rule_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rule Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "entity_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity Type"
+            }
+          },
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "type": "object",
-                  "title": "Response Runs Api V1 Automations Runs Get"
+                  "$ref": "#/components/schemas/AutomationRunList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/automations/jobs": {
+      "get": {
+        "tags": [
+          "Engagement"
+        ],
+        "summary": "Jobs",
+        "operationId": "jobs_api_v1_automations_jobs_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "rule_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rule Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "entity_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity Type"
+            }
+          },
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationJobList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/automations/jobs/{record_id}/retry": {
+      "post": {
+        "tags": [
+          "Engagement"
+        ],
+        "summary": "Retry Job",
+        "operationId": "retry_job_api_v1_automations_jobs__record_id__retry_post",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationJobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/automations/jobs/{record_id}/cancel": {
+      "post": {
+        "tags": [
+          "Engagement"
+        ],
+        "summary": "Cancel Job",
+        "operationId": "cancel_job_api_v1_automations_jobs__record_id__cancel_post",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationJobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -1183,6 +1522,40 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "entity_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 30
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity Type"
+            }
+          },
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 36
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity Id"
+            }
           }
         ],
         "responses": {
@@ -1270,13 +1643,13 @@
         }
       }
     },
-    "/api/v1/email/messages/{record_id}/send": {
-      "post": {
+    "/api/v1/email/messages/{record_id}": {
+      "get": {
         "tags": [
           "Engagement"
         ],
-        "summary": "Send Draft",
-        "operationId": "send_draft_api_v1_email_messages__record_id__send_post",
+        "summary": "Get Draft",
+        "operationId": "get_draft_api_v1_email_messages__record_id__get",
         "parameters": [
           {
             "name": "record_id",
@@ -1293,7 +1666,11 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Draft Api V1 Email Messages  Record Id  Get"
+                }
               }
             }
           },
@@ -1308,9 +1685,7 @@
             }
           }
         }
-      }
-    },
-    "/api/v1/email/messages/{record_id}": {
+      },
       "patch": {
         "tags": [
           "Engagement"
@@ -1383,6 +1758,46 @@
         "responses": {
           "204": {
             "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/email/messages/{record_id}/send": {
+      "post": {
+        "tags": [
+          "Engagement"
+        ],
+        "summary": "Send Draft",
+        "operationId": "send_draft_api_v1_email_messages__record_id__send_post",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
           "422": {
             "description": "Validation Error",
@@ -1612,6 +2027,1357 @@
         "responses": {
           "204": {
             "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/sales": {
+      "get": {
+        "tags": [
+          "Sales reporting"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_v1_reports_sales_get",
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Date From"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Date To"
+            }
+          },
+          {
+            "name": "view",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "open",
+                "won",
+                "lost",
+                "overdue",
+                "undated"
+              ],
+              "type": "string",
+              "default": "open",
+              "title": "View"
+            }
+          },
+          {
+            "name": "pipeline_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pipeline Id"
+            }
+          },
+          {
+            "name": "owner_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Owner Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations": {
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "List Quotations",
+        "operationId": "list_quotations_api_v1_quotations_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "draft",
+                    "issued",
+                    "accepted",
+                    "declined"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "deal_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Deal Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Create Quotation",
+        "operationId": "create_quotation_api_v1_quotations_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations/{quote_id}": {
+      "get": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Get Quotation",
+        "operationId": "get_quotation_api_v1_quotations__quote_id__get",
+        "parameters": [
+          {
+            "name": "quote_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Quote Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Edit Quotation",
+        "operationId": "edit_quotation_api_v1_quotations__quote_id__patch",
+        "parameters": [
+          {
+            "name": "quote_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Quote Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteEdit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/quotations/{quote_id}/{action}": {
+      "post": {
+        "tags": [
+          "quotations"
+        ],
+        "summary": "Transition Quotation",
+        "operationId": "transition_quotation_api_v1_quotations__quote_id___action__post",
+        "parameters": [
+          {
+            "name": "quote_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Quote Id"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "issue",
+                "accept",
+                "decline"
+              ],
+              "type": "string",
+              "title": "Action"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuoteTransition"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/saved-views": {
+      "get": {
+        "tags": [
+          "Saved views"
+        ],
+        "summary": "Listing",
+        "operationId": "listing_api_v1_saved_views_get",
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "leads",
+                "contacts",
+                "parties",
+                "deals",
+                "activities",
+                "campaigns",
+                "tickets"
+              ],
+              "type": "string",
+              "title": "Entity"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViewList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Saved views"
+        ],
+        "summary": "Create",
+        "operationId": "create_api_v1_saved_views_post",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ViewCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/saved-views/{record_id}": {
+      "get": {
+        "tags": [
+          "Saved views"
+        ],
+        "summary": "Get",
+        "operationId": "get_api_v1_saved_views__record_id__get",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Saved views"
+        ],
+        "summary": "Update",
+        "operationId": "update_api_v1_saved_views__record_id__patch",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ViewUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Saved views"
+        ],
+        "summary": "Remove",
+        "operationId": "remove_api_v1_saved_views__record_id__delete",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/custom-fields/definitions": {
+      "get": {
+        "tags": [
+          "Custom fields"
+        ],
+        "summary": "Definitions",
+        "operationId": "definitions_api_v1_custom_fields_definitions_get",
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "leads",
+                "contacts",
+                "parties",
+                "deals",
+                "tickets"
+              ],
+              "type": "string",
+              "title": "Entity"
+            }
+          },
+          {
+            "name": "include_archived",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Archived"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomDefinitionList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Custom fields"
+        ],
+        "summary": "Create Definition",
+        "operationId": "create_definition_api_v1_custom_fields_definitions_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomDefinitionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomDefinitionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/custom-fields/definitions/{field_id}": {
+      "patch": {
+        "tags": [
+          "Custom fields"
+        ],
+        "summary": "Update Definition",
+        "operationId": "update_definition_api_v1_custom_fields_definitions__field_id__patch",
+        "parameters": [
+          {
+            "name": "field_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Field Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomDefinitionUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomDefinitionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/custom-fields/records/{entity}/{record_id}": {
+      "get": {
+        "tags": [
+          "Custom fields"
+        ],
+        "summary": "Record",
+        "operationId": "record_api_v1_custom_fields_records__entity___record_id__get",
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "leads",
+                "contacts",
+                "parties",
+                "deals",
+                "tickets"
+              ],
+              "type": "string",
+              "title": "Entity"
+            }
+          },
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomRecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Custom fields"
+        ],
+        "summary": "Save Record",
+        "operationId": "save_record_api_v1_custom_fields_records__entity___record_id__patch",
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "leads",
+                "contacts",
+                "parties",
+                "deals",
+                "tickets"
+              ],
+              "type": "string",
+              "title": "Entity"
+            }
+          },
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomValuesUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomRecordResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/capture-forms": {
+      "get": {
+        "tags": [
+          "Lead capture"
+        ],
+        "summary": "Listing",
+        "operationId": "listing_api_v1_capture_forms_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Lead capture"
+        ],
+        "summary": "Create",
+        "operationId": "create_api_v1_capture_forms_post",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/capture-forms/{record_id}": {
+      "patch": {
+        "tags": [
+          "Lead capture"
+        ],
+        "summary": "Update",
+        "operationId": "update_api_v1_capture_forms__record_id__patch",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/capture-forms/{record_id}/submissions": {
+      "get": {
+        "tags": [
+          "Lead capture"
+        ],
+        "summary": "Submissions",
+        "operationId": "submissions_api_v1_capture_forms__record_id__submissions_get",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/forms/{record_id}": {
+      "get": {
+        "tags": [
+          "Lead capture"
+        ],
+        "summary": "Public Details",
+        "operationId": "public_details_api_v1_public_forms__record_id__get",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicForm"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Lead capture"
+        ],
+        "summary": "Submit",
+        "operationId": "submit_api_v1_public_forms__record_id__post",
+        "parameters": [
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Record Id"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmissionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
           },
           "422": {
             "description": "Validation Error",
@@ -3834,7 +5600,8 @@
             "type": "string",
             "maxLength": 500,
             "minLength": 1,
-            "title": "Action Text"
+            "title": "Action Text",
+            "default": "Follow up {{name}}"
           },
           "due_days": {
             "type": "integer",
@@ -3842,16 +5609,378 @@
             "minimum": 0.0,
             "title": "Due Days",
             "default": 1
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/AutomationStep"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Steps"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
           "name",
-          "trigger",
-          "action_text"
+          "trigger"
         ],
         "title": "AutomationInput"
+      },
+      "AutomationJobList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AutomationJobResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "title": "AutomationJobList"
+      },
+      "AutomationJobResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "rule_name": {
+            "type": "string",
+            "title": "Rule Name"
+          },
+          "entity_type": {
+            "type": "string",
+            "title": "Entity Type"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "entity_name": {
+            "type": "string",
+            "title": "Entity Name"
+          },
+          "step_index": {
+            "type": "integer",
+            "title": "Step Index"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "create_task",
+              "notify",
+              "assign_owner"
+            ],
+            "title": "Action"
+          },
+          "trigger": {
+            "type": "string",
+            "title": "Trigger"
+          },
+          "delay_minutes": {
+            "type": "integer",
+            "title": "Delay Minutes"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "completed",
+              "failed",
+              "cancelled",
+              "skipped"
+            ],
+            "title": "Status"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "result": {
+            "type": "string",
+            "title": "Result"
+          },
+          "result_entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Entity Type"
+          },
+          "result_entity_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Entity Id"
+          },
+          "error_detail": {
+            "type": "string",
+            "title": "Error Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created_at",
+          "run_id",
+          "rule_id",
+          "actor_id",
+          "rule_name",
+          "entity_type",
+          "entity_id",
+          "entity_name",
+          "step_index",
+          "action",
+          "trigger",
+          "delay_minutes",
+          "status",
+          "scheduled_at",
+          "started_at",
+          "completed_at",
+          "attempts",
+          "result",
+          "result_entity_type",
+          "result_entity_id",
+          "error_detail"
+        ],
+        "title": "AutomationJobResponse"
+      },
+      "AutomationRunList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AutomationRunResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "title": "AutomationRunList"
+      },
+      "AutomationRunResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "event_key": {
+            "type": "string",
+            "title": "Event Key"
+          },
+          "entity_type": {
+            "type": "string",
+            "title": "Entity Type"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "entity_name": {
+            "type": "string",
+            "title": "Entity Name"
+          },
+          "rule_name": {
+            "type": "string",
+            "title": "Rule Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "completed",
+              "failed",
+              "cancelled",
+              "skipped"
+            ],
+            "title": "Status"
+          },
+          "result": {
+            "type": "string",
+            "title": "Result"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created_at",
+          "rule_id",
+          "event_key",
+          "entity_type",
+          "entity_id",
+          "entity_name",
+          "rule_name",
+          "status",
+          "result",
+          "completed_at"
+        ],
+        "title": "AutomationRunResponse"
+      },
+      "AutomationStep": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "create_task",
+              "notify",
+              "assign_owner"
+            ],
+            "title": "Action"
+          },
+          "delay_minutes": {
+            "type": "integer",
+            "maximum": 43200.0,
+            "minimum": 0.0,
+            "title": "Delay Minutes",
+            "default": 0
+          },
+          "action_text": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Action Text",
+            "default": ""
+          },
+          "due_days": {
+            "type": "integer",
+            "maximum": 365.0,
+            "minimum": 0.0,
+            "title": "Due Days",
+            "default": 1
+          },
+          "owner_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 36
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "AutomationStep"
       },
       "AutomationToggle": {
         "properties": {
@@ -4017,6 +6146,401 @@
         "type": "object",
         "title": "ConvertLead"
       },
+      "CustomDefinitionCreate": {
+        "properties": {
+          "entity": {
+            "type": "string",
+            "enum": [
+              "leads",
+              "contacts",
+              "parties",
+              "deals",
+              "tickets"
+            ],
+            "title": "Entity"
+          },
+          "field_key": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,39}$",
+            "title": "Field Key"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "field_type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "number",
+              "date",
+              "boolean",
+              "select"
+            ],
+            "title": "Field Type"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Description",
+            "default": ""
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Options"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "entity",
+          "field_key",
+          "label",
+          "field_type"
+        ],
+        "title": "CustomDefinitionCreate"
+      },
+      "CustomDefinitionList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CustomDefinitionResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "CustomDefinitionList"
+      },
+      "CustomDefinitionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "entity": {
+            "type": "string",
+            "enum": [
+              "leads",
+              "contacts",
+              "parties",
+              "deals",
+              "tickets"
+            ],
+            "title": "Entity"
+          },
+          "field_key": {
+            "type": "string",
+            "title": "Field Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "field_type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "number",
+              "date",
+              "boolean",
+              "select"
+            ],
+            "title": "Field Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "options": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "archived": {
+            "type": "boolean",
+            "title": "Archived"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entity",
+          "field_key",
+          "label",
+          "field_type",
+          "description",
+          "options",
+          "archived",
+          "version"
+        ],
+        "title": "CustomDefinitionResponse"
+      },
+      "CustomDefinitionUpdate": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "archived": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archived"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version"
+        ],
+        "title": "CustomDefinitionUpdate"
+      },
+      "CustomFieldChange": {
+        "properties": {
+          "field_id": {
+            "type": "string",
+            "title": "Field Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field_id",
+          "label",
+          "before",
+          "after"
+        ],
+        "title": "CustomFieldChange"
+      },
+      "CustomFieldEvent": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldChange"
+            },
+            "type": "array",
+            "title": "Changes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "actor_id",
+          "created_at",
+          "changes"
+        ],
+        "title": "CustomFieldEvent"
+      },
+      "CustomRecordResponse": {
+        "properties": {
+          "entity": {
+            "type": "string",
+            "enum": [
+              "leads",
+              "contacts",
+              "parties",
+              "deals",
+              "tickets"
+            ],
+            "title": "Entity"
+          },
+          "record_id": {
+            "type": "string",
+            "title": "Record Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/CustomDefinitionResponse"
+            },
+            "type": "array",
+            "title": "Fields"
+          },
+          "values": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Values"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldEvent"
+            },
+            "type": "array",
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entity",
+          "record_id",
+          "version",
+          "fields",
+          "values",
+          "history"
+        ],
+        "title": "CustomRecordResponse"
+      },
+      "CustomValuesUpdate": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Version"
+          },
+          "values": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "maxProperties": 100,
+            "minProperties": 1,
+            "title": "Values"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version",
+          "values"
+        ],
+        "title": "CustomValuesUpdate"
+      },
       "DraftInput": {
         "properties": {
           "recipient": {
@@ -4103,6 +6627,416 @@
           "error"
         ],
         "title": "ErrorResponse"
+      },
+      "EventResponse": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "changes": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Changes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "actor_id",
+          "created_at",
+          "changes"
+        ],
+        "title": "EventResponse"
+      },
+      "ForecastDeal": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "probability": {
+            "type": "integer",
+            "title": "Probability"
+          },
+          "weighted_value": {
+            "type": "string",
+            "title": "Weighted Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "close_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Close Date"
+          },
+          "lost_reason": {
+            "type": "string",
+            "title": "Lost Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "amount",
+          "probability",
+          "weighted_value",
+          "status",
+          "stage",
+          "close_date",
+          "lost_reason"
+        ],
+        "title": "ForecastDeal"
+      },
+      "ForecastMonth": {
+        "properties": {
+          "month": {
+            "type": "string",
+            "title": "Month"
+          },
+          "open_value": {
+            "type": "string",
+            "title": "Open Value"
+          },
+          "weighted_value": {
+            "type": "string",
+            "title": "Weighted Value"
+          },
+          "won_value": {
+            "type": "string",
+            "title": "Won Value"
+          },
+          "lost_value": {
+            "type": "string",
+            "title": "Lost Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month",
+          "open_value",
+          "weighted_value",
+          "won_value",
+          "lost_value"
+        ],
+        "title": "ForecastMonth"
+      },
+      "ForecastReport": {
+        "properties": {
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Date From"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Date To"
+          },
+          "today": {
+            "type": "string",
+            "format": "date",
+            "title": "Today"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ForecastTotals"
+          },
+          "months": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastMonth"
+            },
+            "type": "array",
+            "title": "Months"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastDeal"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_from",
+          "date_to",
+          "today",
+          "summary",
+          "months",
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "ForecastReport"
+      },
+      "ForecastTotals": {
+        "properties": {
+          "open_count": {
+            "type": "integer",
+            "title": "Open Count",
+            "default": 0
+          },
+          "open_value": {
+            "type": "string",
+            "title": "Open Value",
+            "default": "0.00"
+          },
+          "weighted_value": {
+            "type": "string",
+            "title": "Weighted Value",
+            "default": "0.00"
+          },
+          "won_count": {
+            "type": "integer",
+            "title": "Won Count",
+            "default": 0
+          },
+          "won_value": {
+            "type": "string",
+            "title": "Won Value",
+            "default": "0.00"
+          },
+          "lost_count": {
+            "type": "integer",
+            "title": "Lost Count",
+            "default": 0
+          },
+          "lost_value": {
+            "type": "string",
+            "title": "Lost Value",
+            "default": "0.00"
+          },
+          "win_rate": {
+            "type": "string",
+            "title": "Win Rate",
+            "default": "0.00"
+          },
+          "overdue_count": {
+            "type": "integer",
+            "title": "Overdue Count",
+            "default": 0
+          },
+          "undated_count": {
+            "type": "integer",
+            "title": "Undated Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ForecastTotals"
+      },
+      "FormInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Description",
+            "default": ""
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Source",
+            "default": "Website"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "owner_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Owner Ids"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "title"
+        ],
+        "title": "FormInput"
+      },
+      "FormList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FormResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "FormList"
+      },
+      "FormResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Description",
+            "default": ""
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Source",
+            "default": "Website"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "owner_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Owner Ids"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "submissions": {
+            "type": "integer",
+            "title": "Submissions"
+          },
+          "new_leads": {
+            "type": "integer",
+            "title": "New Leads"
+          },
+          "duplicates": {
+            "type": "integer",
+            "title": "Duplicates"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "title",
+          "version",
+          "id",
+          "submissions",
+          "new_leads",
+          "duplicates",
+          "created_at"
+        ],
+        "title": "FormResponse"
       },
       "HTTPValidationError": {
         "properties": {
@@ -4271,6 +7205,85 @@
           "source_id"
         ],
         "title": "LeadMergePair"
+      },
+      "LineInput": {
+        "properties": {
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Description"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 999999.999,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,3}0*$"
+              }
+            ],
+            "title": "Quantity"
+          },
+          "unit_price": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 999999.9999,
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,4}0*$"
+              }
+            ],
+            "title": "Unit Price"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "description",
+          "quantity",
+          "unit_price"
+        ],
+        "title": "LineInput"
+      },
+      "LineResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "quantity": {
+            "type": "string",
+            "title": "Quantity"
+          },
+          "unit_price": {
+            "type": "string",
+            "title": "Unit Price"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "description",
+          "quantity",
+          "unit_price",
+          "amount"
+        ],
+        "title": "LineResponse"
       },
       "LoginRequest": {
         "properties": {
@@ -4457,6 +7470,410 @@
         ],
         "title": "ProfileUpdate"
       },
+      "PublicForm": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "organization": {
+            "type": "string",
+            "title": "Organization"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "organization"
+        ],
+        "title": "PublicForm"
+      },
+      "QuoteCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          },
+          "terms": {
+            "type": "string",
+            "maxLength": 10000,
+            "title": "Terms",
+            "default": ""
+          },
+          "discount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$"
+              }
+            ],
+            "title": "Discount",
+            "default": "0.00"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/LineInput"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Lines"
+          },
+          "deal_id": {
+            "type": "string",
+            "maxLength": 36,
+            "minLength": 1,
+            "title": "Deal Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "lines",
+          "deal_id"
+        ],
+        "title": "QuoteCreate"
+      },
+      "QuoteEdit": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          },
+          "terms": {
+            "type": "string",
+            "maxLength": 10000,
+            "title": "Terms",
+            "default": ""
+          },
+          "discount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$"
+              }
+            ],
+            "title": "Discount",
+            "default": "0.00"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/LineInput"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Lines"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "lines",
+          "version"
+        ],
+        "title": "QuoteEdit"
+      },
+      "QuoteList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuoteResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "QuoteList"
+      },
+      "QuoteResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "deal_id": {
+            "type": "string",
+            "title": "Deal Id"
+          },
+          "party_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Party Id"
+          },
+          "contact_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "issued",
+              "accepted",
+              "declined"
+            ],
+            "title": "Status"
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR",
+            "title": "Currency"
+          },
+          "customer_name": {
+            "type": "string",
+            "title": "Customer Name"
+          },
+          "contact_name": {
+            "type": "string",
+            "title": "Contact Name"
+          },
+          "deal_name": {
+            "type": "string",
+            "title": "Deal Name"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          },
+          "terms": {
+            "type": "string",
+            "title": "Terms"
+          },
+          "subtotal": {
+            "type": "string",
+            "title": "Subtotal"
+          },
+          "discount": {
+            "type": "string",
+            "title": "Discount"
+          },
+          "total": {
+            "type": "string",
+            "title": "Total"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "issued_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued At"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "decision_note": {
+            "type": "string",
+            "title": "Decision Note"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/LineResponse"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventResponse"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "deal_id",
+          "party_id",
+          "contact_id",
+          "name",
+          "status",
+          "currency",
+          "customer_name",
+          "contact_name",
+          "deal_name",
+          "valid_until",
+          "terms",
+          "subtotal",
+          "discount",
+          "total",
+          "version",
+          "created_at",
+          "updated_at",
+          "issued_at",
+          "decided_at",
+          "decision_note",
+          "lines",
+          "events"
+        ],
+        "title": "QuoteResponse"
+      },
+      "QuoteTransition": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Note",
+            "default": ""
+          },
+          "close_deal": {
+            "type": "boolean",
+            "title": "Close Deal",
+            "default": false
+          },
+          "deal_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deal Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version"
+        ],
+        "title": "QuoteTransition"
+      },
+      "Receipt": {
+        "properties": {
+          "accepted": {
+            "type": "boolean",
+            "const": true,
+            "title": "Accepted",
+            "default": true
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Thank you. Your inquiry has been received."
+          }
+        },
+        "type": "object",
+        "title": "Receipt"
+      },
       "SignupRequest": {
         "properties": {
           "email": {
@@ -4526,6 +7943,113 @@
           "stage_id"
         ],
         "title": "StageChange"
+      },
+      "SubmissionInput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Email"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Phone",
+            "default": ""
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Company",
+            "default": ""
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Message",
+            "default": ""
+          },
+          "consent": {
+            "type": "boolean",
+            "const": true,
+            "title": "Consent"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "consent"
+        ],
+        "title": "SubmissionInput"
+      },
+      "SubmissionList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SubmissionResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "SubmissionList"
+      },
+      "SubmissionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "lead_id": {
+            "type": "string",
+            "title": "Lead Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "duplicate": {
+            "type": "boolean",
+            "title": "Duplicate"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "lead_id",
+          "name",
+          "message",
+          "duplicate",
+          "created_at"
+        ],
+        "title": "SubmissionResponse"
       },
       "TeamCreate": {
         "properties": {
@@ -4708,6 +8232,190 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "ViewCreate": {
+        "properties": {
+          "entity": {
+            "type": "string",
+            "enum": [
+              "leads",
+              "contacts",
+              "parties",
+              "deals",
+              "activities",
+              "campaigns",
+              "tickets"
+            ],
+            "title": "Entity"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/ViewFilters"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "entity",
+          "name",
+          "filters"
+        ],
+        "title": "ViewCreate"
+      },
+      "ViewFilters": {
+        "properties": {
+          "q": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Q",
+            "default": ""
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 30,
+            "title": "Status",
+            "default": ""
+          },
+          "sort": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Sort",
+            "default": "updated_at:desc"
+          },
+          "pipeline_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 36
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pipeline Id"
+          },
+          "view": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "board",
+                  "table"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "View"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ViewFilters"
+      },
+      "ViewList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ViewResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ViewList"
+      },
+      "ViewResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "entity": {
+            "type": "string",
+            "enum": [
+              "leads",
+              "contacts",
+              "parties",
+              "deals",
+              "activities",
+              "campaigns",
+              "tickets"
+            ],
+            "title": "Entity"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/ViewFilters"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "entity",
+          "name",
+          "filters",
+          "version",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ViewResponse"
+      },
+      "ViewUpdate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/ViewFilters"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "filters",
+          "version"
+        ],
+        "title": "ViewUpdate"
       },
       "LeadInput": {
         "additionalProperties": false,

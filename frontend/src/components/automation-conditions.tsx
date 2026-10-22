@@ -14,12 +14,21 @@ const fieldNames: [Condition["field"], string][] = [
   ["company", "Company"],
 ];
 
+export const automationTriggers = ["leads.created", "leads.updated", "leads.converted", "deals.created", "deals.won", "deals.lost", "deals.stage_changed", "tickets.created", "tickets.updated", "activities.created", "activities.completed"];
+export function conditionFields(trigger: string): Condition["field"][] {
+  if (trigger.startsWith("leads.")) return ["status", "source", "score", "value", "company"];
+  if (trigger.startsWith("deals.")) return ["status", "amount"];
+  return ["status", "priority"];
+}
+
 export function AutomationConditions({
   value,
   onChange,
+  trigger,
 }: {
   value: Condition[];
   onChange: (value: Condition[]) => void;
+  trigger: string;
 }) {
   const update = (index: number, patch: Partial<Condition>) =>
     onChange(
@@ -35,6 +44,7 @@ export function AutomationConditions({
         All conditions must match. Leave this empty to run on every matching
         event.
       </p>
+      <p>Conditions use fields available on this event. Changing the trigger removes conditions that no longer apply.</p>
       {value.map((condition, index) => (
         <div className="form-grid" key={index} style={{ marginTop: 16 }}>
           <label>
@@ -53,7 +63,7 @@ export function AutomationConditions({
                 });
               }}
             >
-              {fieldNames.map(([field, label]) => (
+              {fieldNames.filter(([field]) => conditionFields(trigger).includes(field)).map(([field, label]) => (
                 <option value={field} key={field}>
                   {label}
                 </option>
@@ -110,7 +120,7 @@ export function AutomationConditions({
         onClick={() =>
           onChange([
             ...value,
-            { field: "source", operator: "equals", value: "Website" },
+            { field: conditionFields(trigger)[0]!, operator: "equals", value: "" },
           ])
         }
       >

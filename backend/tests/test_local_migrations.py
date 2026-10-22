@@ -27,7 +27,10 @@ def test_local_migrations_apply_once_and_match_registered_schema(tmp_path: Path)
             actual = {column["name"] for column in inspector.get_columns(table.name)}
             assert actual == set(table.c.keys()), table.name
         with engine.connect() as connection:
-            assert connection.scalar(text("SELECT count(*) FROM crm_schema_migrations")) == 5
+            migrations = Path(bootstrap.__file__).resolve().parents[2] / "local_migrations"
+            assert connection.scalar(text("SELECT count(*) FROM crm_schema_migrations")) == len(
+                list(migrations.glob("*.sql"))
+            )
     finally:
         engine.dispose()
 

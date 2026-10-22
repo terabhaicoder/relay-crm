@@ -1,4 +1,3 @@
-from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
@@ -7,9 +6,10 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, or_, select, update
 from sqlalchemy.orm import Session
 
-from app.modules.auth.models import User, utcnow
+from app.modules.auth.models import User
 from app.modules.engagement.models import (
     Automation,
+    AutomationJob,
     AutomationRun,
     EmailDraft,
     EmailTemplate,
@@ -69,6 +69,10 @@ def create_engagement(
             values["owner_id"] = user.id
         if model is EmailDraft:
             validate_link(values)
+        if model is Automation:
+            from app.modules.engagement.workflows import validate_targets
+
+            validate_targets(db, user, values.get("steps", []))
         row = model(org_id=user.org_id, **values)
         db.add(row)
         db.flush()
@@ -89,11 +93,23 @@ def list_engagement(
     order: str = "desc",
     limit: int = 50,
     offset: int = 0,
+    entity_type: str | None = None,
+    entity_id: str | None = None,
+    enabled: bool | None = None,
 ) -> dict[str, Any]:
     model: Any = Automation if entity == "automations" else EmailDraft
     query = select(model).where(model.org_id == user.org_id)
+    if model is Automation and enabled is not None:
+        query = query.where(model.enabled == enabled)
     if model is EmailDraft and user.role in {"Sales Rep", "Sales Representative"}:
         query = query.where(model.owner_id == user.id)
+    if entity_type or entity_id:
+        from app.modules.crm.repository import CRMRepository
+
+        if model is not EmailDraft or not entity_type or not entity_id:
+            raise HTTPException(422, "Choose a related record type and record ID together.")
+        CRMRepository(db, user).get(entity_type, entity_id)
+        query = query.where(model.entity_type == entity_type, model.entity_id == entity_id)
     if q:
         escaped = q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
         fields = (
@@ -135,7 +151,7 @@ def relink_entity(
     repository = CRMRepository(db, user)
     repository.get(entity_type, source_id)
     repository.get(entity_type, target_id)
-    for model in (EmailDraft, Notification):
+    for model in (EmailDraft, Notification, AutomationRun, AutomationJob):
         db.execute(
             update(model)
             .where(
@@ -145,6 +161,15 @@ def relink_entity(
             )
             .values(entity_id=target_id)
         )
+    db.execute(
+        update(AutomationJob)
+        .where(
+            AutomationJob.org_id == user.org_id,
+            AutomationJob.result_entity_type == entity_type,
+            AutomationJob.result_entity_id == source_id,
+        )
+        .values(result_entity_id=target_id)
+    )
 
 
 def matches(conditions: list[dict[str, Any]], record: Any) -> bool:
@@ -174,6 +199,8 @@ def on_crm_event(
 ) -> None:
     """Runs in the caller's transaction. Actions do not recursively emit events."""
     del changes
+    if db.info.get("automation_dispatch_depth", 0):
+        return
     if record.org_id != user.org_id:
         raise ValueError("Automation tenant mismatch")
     aliases = {
@@ -205,48 +232,29 @@ def on_crm_event(
         )
         if existing:
             continue
-        title = rule.action_text.replace("{{name}}", record.name)
-        recipient_id = getattr(record, "owner_id", None) or user.id
-        result = "Notification created"
-        if rule.action == "create_task":
-            from app.modules.crm.models import Activity
+        from app.modules.engagement.workflows import enqueue
 
-            # Activity follow-ups keep the same customer context. Linking to an
-            # activity itself produces an unsupported, uneditable CRM relation.
-            linked_type = record.entity_type if entity_type == "activities" else entity_type
-            linked_id = record.entity_id if entity_type == "activities" else record.id
-            db.add(
-                Activity(
-                    org_id=user.org_id,
-                    owner_id=recipient_id,
-                    name=title,
-                    type="task",
-                    status="pending",
-                    priority="medium",
-                    due_date=(utcnow() + timedelta(days=rule.due_days)).date().isoformat(),
-                    entity_type=linked_type,
-                    entity_id=linked_id,
-                    notes=f"Created by automation: {rule.name}",
-                )
-            )
-            result = "Follow-up task created"
-        db.add(
-            Notification(
-                org_id=user.org_id,
-                user_id=recipient_id,
-                title=title,
-                entity_type=entity_type,
-                entity_id=record.id,
-            )
-        )
-        db.add(
-            AutomationRun(
-                org_id=user.org_id,
-                rule_id=rule.id,
-                event_key=event_key,
-                entity_type=entity_type,
-                entity_id=record.id,
-                result=result,
-            )
-        )
-        db.flush()
+        enqueue(db, rule, entity_type, record, event_key)
+
+
+def update_automation(
+    db: Session, user: User, record_id: str, values: dict[str, Any]
+) -> dict[str, Any]:
+    from app.core.db import ensure_write_transaction
+    from app.modules.crm.service import serialize
+    from app.modules.engagement.workflows import pause_pending, require_manager, validate_targets
+
+    require_manager(user)
+    ensure_write_transaction(db)
+    row = db.scalar(
+        select(Automation).where(Automation.org_id == user.org_id, Automation.id == record_id)
+    )
+    if row is None:
+        raise HTTPException(404, "Automation not found.")
+    validate_targets(db, user, values.get("steps", []))
+    for key, value in values.items():
+        setattr(row, key, value)
+    if not row.enabled:
+        pause_pending(db, row)
+    db.commit()
+    return serialize(row)

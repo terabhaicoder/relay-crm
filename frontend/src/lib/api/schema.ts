@@ -1,6 +1,16 @@
 // Generated from frontend/openapi.json. Do not edit.
 
-export type AutomationInput = { "name": string; "trigger": "leads.created" | "leads.updated" | "leads.converted" | "deals.created" | "deals.won" | "deals.lost" | "deals.stage_changed" | "tickets.created" | "tickets.updated" | "activities.created" | "activities.completed"; "enabled"?: boolean; "conditions"?: Array<Condition>; "action"?: "create_task" | "notify"; "action_text": string; "due_days"?: number; };
+export type AutomationInput = { "name": string; "trigger": "leads.created" | "leads.updated" | "leads.converted" | "deals.created" | "deals.won" | "deals.lost" | "deals.stage_changed" | "tickets.created" | "tickets.updated" | "activities.created" | "activities.completed"; "enabled"?: boolean; "conditions"?: Array<Condition>; "action"?: "create_task" | "notify"; "action_text"?: string; "due_days"?: number; "steps"?: Array<AutomationStep>; };
+
+export type AutomationJobList = { "items": Array<AutomationJobResponse>; "total": number; "page": number; "page_size": number; };
+
+export type AutomationJobResponse = { "id": string; "created_at": string; "run_id": string; "rule_id": string; "actor_id": string; "rule_name": string; "entity_type": string; "entity_id": string; "entity_name": string; "step_index": number; "action": "create_task" | "notify" | "assign_owner"; "trigger": string; "delay_minutes": number; "status": "queued" | "completed" | "failed" | "cancelled" | "skipped"; "scheduled_at": (string | null); "started_at": (string | null); "completed_at": (string | null); "attempts": number; "result": string; "result_entity_type": (string | null); "result_entity_id": (string | null); "error_detail": string; };
+
+export type AutomationRunList = { "items": Array<AutomationRunResponse>; "total": number; "page": number; "page_size": number; };
+
+export type AutomationRunResponse = { "id": string; "created_at": string; "rule_id": string; "event_key": string; "entity_type": string; "entity_id": string; "entity_name": string; "rule_name": string; "status": "queued" | "completed" | "failed" | "cancelled" | "skipped"; "result": string; "completed_at": (string | null); };
+
+export type AutomationStep = { "action": "create_task" | "notify" | "assign_owner"; "delay_minutes"?: number; "action_text"?: string; "due_days"?: number; "owner_id"?: (string | null); };
 
 export type AutomationToggle = { "enabled": boolean; };
 
@@ -12,11 +22,43 @@ export type Condition = { "field": "status" | "source" | "priority" | "score" | 
 
 export type ConvertLead = { "create_deal"?: boolean; "deal_name"?: (string | null); "amount"?: (number | string | null); "contact_id"?: (string | null); "party_id"?: (string | null); };
 
+export type CustomDefinitionCreate = { "entity": "leads" | "contacts" | "parties" | "deals" | "tickets"; "field_key": string; "label": string; "field_type": "text" | "number" | "date" | "boolean" | "select"; "description"?: string; "options"?: Array<string>; };
+
+export type CustomDefinitionList = { "items": Array<CustomDefinitionResponse>; "total": number; };
+
+export type CustomDefinitionResponse = { "id": string; "entity": "leads" | "contacts" | "parties" | "deals" | "tickets"; "field_key": string; "label": string; "field_type": "text" | "number" | "date" | "boolean" | "select"; "description": string; "options": Array<string>; "archived": boolean; "version": number; };
+
+export type CustomDefinitionUpdate = { "version": number; "label"?: (string | null); "description"?: (string | null); "options"?: (Array<string> | null); "archived"?: (boolean | null); };
+
+export type CustomFieldChange = { "field_id": string; "label": string; "before": (string | boolean | null); "after": (string | boolean | null); };
+
+export type CustomFieldEvent = { "action": string; "actor_id": string; "created_at": string; "changes": Array<CustomFieldChange>; };
+
+export type CustomRecordResponse = { "entity": "leads" | "contacts" | "parties" | "deals" | "tickets"; "record_id": string; "version": number; "fields": Array<CustomDefinitionResponse>; "values": Record<string, (string | boolean | null)>; "history": Array<CustomFieldEvent>; };
+
+export type CustomValuesUpdate = { "version": number; "values": Record<string, (string | boolean | null)>; };
+
 export type DraftInput = { "recipient": string; "subject": string; "body": string; "entity_type"?: (string | null); "entity_id"?: (string | null); };
 
 export type ErrorBody = { "code": string; "message": string; "details"?: Record<string, unknown>; };
 
 export type ErrorResponse = { "error": ErrorBody; };
+
+export type EventResponse = { "action": string; "actor_id": string; "created_at": string; "changes": Record<string, (string | boolean)>; };
+
+export type ForecastDeal = { "id": string; "name": string; "amount": string; "probability": number; "weighted_value": string; "status": string; "stage": string; "close_date": (string | null); "lost_reason": string; };
+
+export type ForecastMonth = { "month": string; "open_value": string; "weighted_value": string; "won_value": string; "lost_value": string; };
+
+export type ForecastReport = { "date_from": string; "date_to": string; "today": string; "summary": ForecastTotals; "months": Array<ForecastMonth>; "items": Array<ForecastDeal>; "total": number; "limit": number; "offset": number; };
+
+export type ForecastTotals = { "open_count"?: number; "open_value"?: string; "weighted_value"?: string; "won_count"?: number; "won_value"?: string; "lost_count"?: number; "lost_value"?: string; "win_rate"?: string; "overdue_count"?: number; "undated_count"?: number; };
+
+export type FormInput = { "name": string; "title": string; "description"?: string; "source"?: string; "enabled"?: boolean; "owner_ids"?: Array<string>; "version"?: (number | null); };
+
+export type FormList = { "items": Array<FormResponse>; "total": number; };
+
+export type FormResponse = { "name": string; "title": string; "description"?: string; "source"?: string; "enabled"?: boolean; "owner_ids"?: Array<string>; "version": number; "id": string; "submissions": number; "new_leads": number; "duplicates": number; "created_at": string; };
 
 export type HTTPValidationError = { "detail"?: Array<ValidationError>; };
 
@@ -29,6 +71,10 @@ export type InviteCreate = { "email": string; "role"?: "Admin" | "Sales Manager"
 export type LeadMergeInput = { "target_id": string; "source_version"?: (number | null); "target_version"?: (number | null); };
 
 export type LeadMergePair = { "target_id": string; "source_version"?: (number | null); "target_version"?: (number | null); "source_id": string; };
+
+export type LineInput = { "description": string; "quantity": (number | string); "unit_price": (number | string); };
+
+export type LineResponse = { "id": string; "description": string; "quantity": string; "unit_price": string; "amount": string; };
 
 export type LoginRequest = { "email": string; "password": string; };
 
@@ -44,9 +90,29 @@ export type PipelineUpdate = { "name"?: (string | null); "stages"?: (Array<Pipel
 
 export type ProfileUpdate = { "name": string; };
 
+export type PublicForm = { "id": string; "title": string; "description": string; "organization": string; };
+
+export type QuoteCreate = { "name": string; "valid_until"?: (string | null); "terms"?: string; "discount"?: (number | string); "lines": Array<LineInput>; "deal_id": string; };
+
+export type QuoteEdit = { "name": string; "valid_until"?: (string | null); "terms"?: string; "discount"?: (number | string); "lines": Array<LineInput>; "version": number; };
+
+export type QuoteList = { "items": Array<QuoteResponse>; "total": number; };
+
+export type QuoteResponse = { "id": string; "deal_id": string; "party_id": (string | null); "contact_id": (string | null); "name": string; "status": "draft" | "issued" | "accepted" | "declined"; "currency": "INR"; "customer_name": string; "contact_name": string; "deal_name": string; "valid_until": (string | null); "terms": string; "subtotal": string; "discount": string; "total": string; "version": number; "created_at": string; "updated_at": string; "issued_at": (string | null); "decided_at": (string | null); "decision_note": string; "lines": Array<LineResponse>; "events": Array<EventResponse>; };
+
+export type QuoteTransition = { "version": number; "note"?: string; "close_deal"?: boolean; "deal_version"?: (number | null); };
+
+export type Receipt = { "accepted"?: true; "message"?: string; };
+
 export type SignupRequest = { "email": string; "password": string; "name": string; "company_name": string; };
 
 export type StageChange = { "stage_id": string; "version"?: (number | null); "reason"?: string; };
+
+export type SubmissionInput = { "name": string; "email": string; "phone"?: string; "company"?: string; "message"?: string; "consent": true; };
+
+export type SubmissionList = { "items": Array<SubmissionResponse>; "total": number; };
+
+export type SubmissionResponse = { "id": string; "lead_id": string; "name": string; "message": string; "duplicate": boolean; "created_at": string; };
 
 export type TeamCreate = { "email": string; "password": string; "name": string; "role"?: "Admin" | "Sales Manager" | "Sales Rep" | "Support Agent" | "Read-only"; };
 
@@ -57,6 +123,16 @@ export type TemplateInput = { "name": string; "subject": string; "body": string;
 export type UserResponse = { "id": string; "org_id": string; "name": string; "email": string; "role": string; "company_name": string; "is_active"?: boolean; };
 
 export type ValidationError = { "loc": Array<(string | number)>; "msg": string; "type": string; };
+
+export type ViewCreate = { "entity": "leads" | "contacts" | "parties" | "deals" | "activities" | "campaigns" | "tickets"; "name": string; "filters": ViewFilters; };
+
+export type ViewFilters = { "q"?: string; "status"?: string; "sort"?: string; "pipeline_id"?: (string | null); "view"?: ("board" | "table" | null); };
+
+export type ViewList = { "items": Array<ViewResponse>; "total": number; };
+
+export type ViewResponse = { "id": string; "entity": "leads" | "contacts" | "parties" | "deals" | "activities" | "campaigns" | "tickets"; "name": string; "filters": ViewFilters; "version": number; "created_at": string; "updated_at": string; };
+
+export type ViewUpdate = { "name": string; "filters": ViewFilters; "version": number; };
 
 export type LeadInput = { "name"?: string; "owner_id"?: (string | null); "tags"?: Array<string>; "version"?: (number | null); "email"?: string; "phone"?: string; "company"?: string; "title"?: string; "source"?: string; "status"?: "New" | "Contacted" | "Qualified" | "Unqualified" | "Converted"; "value"?: (number | string); "score"?: number; "next_follow_up"?: (string | null); "notes"?: string; };
 
@@ -99,7 +175,10 @@ export type ApiOperations = {
 "GET /api/v1/automations": { request: never; response: Record<string, unknown>; };
 "POST /api/v1/automations": { request: AutomationInput; response: Record<string, unknown>; };
 "PATCH /api/v1/automations/{record_id}": { request: (AutomationInput | AutomationToggle); response: Record<string, unknown>; };
-"GET /api/v1/automations/runs": { request: never; response: Record<string, unknown>; };
+"GET /api/v1/automations/runs": { request: never; response: AutomationRunList; };
+"GET /api/v1/automations/jobs": { request: never; response: AutomationJobList; };
+"POST /api/v1/automations/jobs/{record_id}/retry": { request: never; response: AutomationJobResponse; };
+"POST /api/v1/automations/jobs/{record_id}/cancel": { request: never; response: AutomationJobResponse; };
 "GET /api/v1/notifications": { request: never; response: Record<string, unknown>; };
 "POST /api/v1/notifications/{record_id}/read": { request: never; response: Record<string, unknown>; };
 "GET /api/v1/email/templates": { request: never; response: Record<string, unknown>; };
@@ -108,14 +187,37 @@ export type ApiOperations = {
 "PATCH /api/v1/email/templates/{record_id}": { request: TemplateInput; response: Record<string, unknown>; };
 "GET /api/v1/email/messages": { request: never; response: Record<string, unknown>; };
 "POST /api/v1/email/messages": { request: DraftInput; response: Record<string, unknown>; };
-"POST /api/v1/email/messages/{record_id}/send": { request: never; response: unknown; };
+"GET /api/v1/email/messages/{record_id}": { request: never; response: Record<string, unknown>; };
 "PATCH /api/v1/email/messages/{record_id}": { request: DraftInput; response: Record<string, unknown>; };
 "DELETE /api/v1/email/messages/{record_id}": { request: never; response: void; };
+"POST /api/v1/email/messages/{record_id}/send": { request: never; response: unknown; };
 "GET /api/v1/integrations": { request: never; response: Record<string, unknown>; };
 "GET /api/v1/attachments": { request: never; response: Record<string, unknown>; };
 "POST /api/v1/attachments": { request: never; response: Record<string, unknown>; };
 "GET /api/v1/attachments/{attachment_id}/download": { request: never; response: unknown; };
 "DELETE /api/v1/attachments/{attachment_id}": { request: never; response: void; };
+"GET /api/v1/reports/sales": { request: never; response: ForecastReport; };
+"GET /api/v1/quotations": { request: never; response: QuoteList; };
+"POST /api/v1/quotations": { request: QuoteCreate; response: QuoteResponse; };
+"GET /api/v1/quotations/{quote_id}": { request: never; response: QuoteResponse; };
+"PATCH /api/v1/quotations/{quote_id}": { request: QuoteEdit; response: QuoteResponse; };
+"POST /api/v1/quotations/{quote_id}/{action}": { request: QuoteTransition; response: QuoteResponse; };
+"GET /api/v1/saved-views": { request: never; response: ViewList; };
+"POST /api/v1/saved-views": { request: ViewCreate; response: ViewResponse; };
+"GET /api/v1/saved-views/{record_id}": { request: never; response: ViewResponse; };
+"PATCH /api/v1/saved-views/{record_id}": { request: ViewUpdate; response: ViewResponse; };
+"DELETE /api/v1/saved-views/{record_id}": { request: never; response: void; };
+"GET /api/v1/custom-fields/definitions": { request: never; response: CustomDefinitionList; };
+"POST /api/v1/custom-fields/definitions": { request: CustomDefinitionCreate; response: CustomDefinitionResponse; };
+"PATCH /api/v1/custom-fields/definitions/{field_id}": { request: CustomDefinitionUpdate; response: CustomDefinitionResponse; };
+"GET /api/v1/custom-fields/records/{entity}/{record_id}": { request: never; response: CustomRecordResponse; };
+"PATCH /api/v1/custom-fields/records/{entity}/{record_id}": { request: CustomValuesUpdate; response: CustomRecordResponse; };
+"GET /api/v1/capture-forms": { request: never; response: FormList; };
+"POST /api/v1/capture-forms": { request: FormInput; response: FormResponse; };
+"PATCH /api/v1/capture-forms/{record_id}": { request: FormInput; response: FormResponse; };
+"GET /api/v1/capture-forms/{record_id}/submissions": { request: never; response: SubmissionList; };
+"GET /api/v1/public/forms/{record_id}": { request: never; response: PublicForm; };
+"POST /api/v1/public/forms/{record_id}": { request: SubmissionInput; response: Receipt; };
 "GET /api/v1/dashboard/{role}": { request: never; response: Record<string, unknown>; };
 "GET /api/v1/dashboard": { request: never; response: Record<string, unknown>; };
 "GET /api/v1/reports/{name}": { request: never; response: Record<string, unknown>; };

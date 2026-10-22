@@ -1,0 +1,71 @@
+.page { color: #213a31; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 0 0 28px; }
+.header h2, .document h2, .editor h2 { font-family: Georgia, serif; font-size: 29px; font-weight: 400; letter-spacing: -.7px; margin: 8px 0 10px; }
+.header p, .editor header p { color: #66736a; max-width: 630px; line-height: 1.6; margin: 0; }
+.eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.6px; color: #657c6d; }
+.layout { display: grid; grid-template-columns: minmax(270px, .85fr) minmax(0, 1.45fr); gap: 24px; align-items: start; }
+.collection, .document, .editor { border: 1px solid #dce1d8; border-radius: 14px; background: #fffef9; padding: 24px; min-width: 0; }
+.collection { padding: 18px; }
+.filters { display: grid; gap: 12px; }
+.page label { display: grid; gap: 7px; font-size: 12px; font-weight: 600; }
+.page input, .page textarea { border: 1px solid #d8dfd6; border-radius: 7px; padding: 10px 11px; width: 100%; min-width: 0; background: white; color: #233d31; font: inherit; line-height: 1.4; }
+.page textarea { resize: vertical; }
+.page input:focus-visible, .page textarea:focus-visible, .page button:focus-visible, .page a:focus-visible { outline: 2px solid #346b4c; outline-offset: 3px; }
+.count, .hint { color: #748075; font-size: 12px; line-height: 1.6; }
+.count { margin: 18px 0 10px; }
+.quoteList { margin: 0; padding: 0; list-style: none; }
+.quoteList li + li { border-top: 1px solid #e9ebe3; }
+.quoteList button { display: flex; justify-content: space-between; align-items: start; width: 100%; border: 0; background: transparent; padding: 17px 10px; gap: 14px; border-radius: 7px; color: inherit; text-align: left; cursor: pointer; }
+.quoteList button:hover, .quoteList button[aria-pressed="true"] { background: #edf3e9; }
+.quoteList strong { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.quoteList span { display: grid; gap: 6px; }
+.quoteList span:last-child { text-align: right; flex-shrink: 0; }
+.quoteList small { color: #768176; font-size: 11px; }
+.status { text-transform: capitalize; }
+.empty { padding: 36px 6px; }
+.empty h3 { font: 21px Georgia, serif; margin: 8px 0 12px; }
+.empty p { color: #768176; line-height: 1.7; font-size: 13px; }
+.documentHeader { padding-bottom: 20px; border-bottom: 1px solid #e3e7de; }
+.documentHeader p { font-size: 13px; line-height: 1.7; }
+.documentHeader a, .deal a { color: #376849; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.tableScroll { overflow-x: auto; margin-top: 20px; }
+.document table { border-collapse: collapse; width: 100%; font-size: 12px; }
+.document th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .6px; color: #798477; white-space: nowrap; }
+.document td, .document th { border-bottom: 1px solid #eaede5; padding: 13px 8px; }
+.document td:first-child { min-width: 130px; overflow-wrap: anywhere; }
+.document td:not(:first-child) { white-space: nowrap; text-align: right; }
+.totals { max-width: 330px; margin: 24px 0 20px auto; font-size: 13px; }
+.totals div { display: flex; justify-content: space-between; gap: 20px; padding: 7px 0; }
+.totals dd { margin: 0; }
+.totals .grandTotal { border-top: 1px solid #dce2d6; padding-top: 16px; margin-top: 8px; font: 24px Georgia, serif; }
+.terms { border-top: 1px solid #e3e7de; margin-top: 22px; padding-top: 16px; }
+.terms h3, .history h3, .decision h3, .lineHeading h3 { font-size: 13px; }
+.terms p { font-size: 13px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.terms small { color: #748075; }
+.actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 22px; flex-wrap: wrap; }
+.history { border-top: 1px solid #e3e7de; margin-top: 24px; padding-top: 18px; }
+.history ol { list-style: none; padding: 0; font-size: 12px; }
+.history li { display: flex; gap: 14px; justify-content: space-between; padding: 8px 0; }
+.history span { text-transform: capitalize; }
+.history time { color: #7a8479; text-align: right; }
+.error, .success { padding: 13px 16px; border-radius: 8px; margin: 0 0 20px; font-size: 13px; line-height: 1.6; }
+.error { color: #8e332c; background: #fff1eb; border: 1px solid #efcabe; }
+.success { color: #315a3d; background: #edf5e8; border: 1px solid #d5e5cc; }
+.editor { max-width: 1050px; }
+.editor fieldset { padding: 0; margin: 24px 0 0; border: 0; min-width: 0; }
+.fields { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; margin: 20px 0; align-items: center; }
+.deal { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; background: #f0f4eb; padding: 14px; border-radius: 8px; }
+.deal span { color: #768176; font-size: 11px; }
+.deal strong { font-size: 13px; }
+.lineHeading { display: flex; align-items: center; justify-content: space-between; margin-top: 26px; }
+.lineHeading span { color: #748075; font-size: 11px; }
+.line { display: grid; grid-template-columns: minmax(150px, 2fr) minmax(80px, .7fr) minmax(100px, 1fr) auto; gap: 12px; align-items: end; padding: 16px 0; border-top: 1px solid #e3e7de; }
+.searchResults { padding: 8px 0; font-size: 12px; }
+.searchResults > button { display: flex; justify-content: space-between; width: 100%; background: #f5f7ef; border: 0; padding: 12px; text-align: left; cursor: pointer; margin-bottom: 2px; color: #294c36; }
+.decision { padding: 20px; background: #f0f4e9; border: 1px solid #d6e2cd; border-radius: 10px; margin-top: 22px; }
+.decision > p { font-size: 12px; line-height: 1.7; color: #61735f; }
+.decision .checkbox { display: flex; align-items: center; gap: 9px; margin-top: 18px; font-size: 12px; line-height: 1.6; }
+.checkbox input { width: 16px; height: 16px; accent-color: #386745; flex-shrink: 0; }
+.pager { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 20px; font-size: 11px; }
+@media (max-width: 1050px) { .layout { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .header { flex-direction: column; align-items: start; } .header h2, .document h2, .editor h2 { font-size: 25px; } .document, .editor, .collection { padding: 17px; } .fields { grid-template-columns: 1fr; gap: 14px; } .line { grid-template-columns: 1fr 1fr; } .line > label:first-child { grid-column: 1 / -1; } .line > button { grid-column: 1 / -1; justify-self: end; } .history li { flex-direction: column; gap: 4px; } .history time { text-align: left; } }

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 const workspaceSections = new Set([
   "dashboard", "workbench", "pipelines", "leads", "contacts", "accounts", "deals", "activities",
   "calendar", "campaigns", "tickets", "reports", "automations",
-  "communications", "settings",
+  "communications", "settings", "quotations",
 ]);
 export default async function Page({
   params,

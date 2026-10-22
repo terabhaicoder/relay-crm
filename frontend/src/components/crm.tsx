@@ -21,7 +21,15 @@ import {
 import { api, ApiError, amount, formatTimestamp, idempotencyRequest, Row, submittedDate, text, User } from "@/lib/api/client";
 import { Icon } from "./icon";
 import { ActiveSessions, TeamInvitations } from "./account-access";
-import { AutomationConditions } from "./automation-conditions";
+import { AutomationConditions, automationTriggers, conditionFields } from "./automation-conditions";
+import { EngagementTemplatePicker } from "./engagement-template-picker";
+import { EngagementRecordDrafts } from "./engagement-record-drafts";
+import { ForecastPanel } from "./forecast-panel";
+import { Quotations } from "./quotations";
+import { AutomationWorkspace } from "./automation-workspace";
+import { CustomFieldSettings, CustomRecordFields } from "./custom-fields";
+import { LeadCaptureSettings } from "./lead-capture";
+import { IntegrationCatalog } from "./integration-catalog";
 import type { Condition } from "@/lib/api/schema";
 
 type List = { items: Row[]; total: number };
@@ -48,6 +56,7 @@ const navigation: [string, string][] = [
   ["contacts", "Contacts"],
   ["accounts", "Companies"],
   ["deals", "Pipeline"],
+  ["quotations", "Quotations"],
   ["activities", "My tasks"],
   ["calendar", "Calendar"],
   ["campaigns", "Campaigns"],
@@ -84,6 +93,7 @@ const descriptions: Record<string, string> = {
   contacts: "The people behind your customer relationships.",
   accounts: "Keep every customer relationship in context.",
   deals: "A clear view of what is moving, and what needs a nudge.",
+  quotations: "Bring the proposal, customer and opportunity together.",
   activities: "Make room for the next important conversation.",
   calendar: "Your upcoming meetings, calls, and follow-ups.",
   campaigns: "Turn your outreach into lasting relationships.",
@@ -214,11 +224,13 @@ const fields: Record<string, Field[]> = {
     {
       key: "trigger",
       label: "Trigger",
-      options: ["leads.created", "deals.won", "tickets.created"],
+      options: automationTriggers,
     },
     { key: "action", label: "Action", options: ["create_task", "notify"] },
   ],
   communications: [
+    { key: "entity_type", label: "Related record type", options: ["", "leads", "contacts", "parties", "deals", "tickets"] },
+    { key: "entity_id", label: "Related record", type: "relation:dynamic" },
     {
       key: "recipient",
       label: "To",
@@ -491,7 +503,7 @@ export function CRM({ section }: { section: string }) {
     setError("");
     setFailedScope("");
     try {
-      if (["dashboard", "reports"].includes(section)) {
+      if (section === "dashboard") {
         const [stats, taskList, dealList, pipelineList] = await Promise.all([
           api<Record<string, unknown>>("/dashboard"),
           api<List>(
@@ -505,7 +517,7 @@ export function CRM({ section }: { section: string }) {
         setTasks(taskList.items);
         setRecentDeals(dealList.items);
         setPipelines(pipelineList.items);
-      } else if (["workbench", "pipelines", "calendar"].includes(section)) {
+      } else if (["workbench", "pipelines", "calendar", "reports", "quotations", "automations"].includes(section)) {
         // These views own their bounded server queries.
       } else if (section === "settings") {
         const integrations = await api<List>("/integrations");
@@ -763,9 +775,10 @@ export function CRM({ section }: { section: string }) {
                   <p>{descriptions[section]}</p>
                 </div>
                 <div className="heading-actions">
+                  {section === "leads" && ["Owner", "Admin", "Sales Manager"].includes(user.role) && <Link className="button secondary" href="/settings?tab=lead-capture">Lead capture</Link>}
                   {section === "deals" && <Link className="button secondary" href="/pipelines"><Icon name="settings" size={17}/> Configure pipelines</Link>}
                   {section === "pipelines" && <Link className="button subtle" href="/deals">Back to pipeline</Link>}
-                  {canWrite && singular[section] && (
+                  {canWrite && singular[section] && section !== "automations" && (
                     <button
                       className="button primary"
                       onClick={() => setEditor("new")}
@@ -778,8 +791,8 @@ export function CRM({ section }: { section: string }) {
                   )}
                 </div>
               </div>
-              {section === "workbench" ? <SalesWorkbench userId={user.id} canWrite={canWrite} onChanged={() => void load()}/> : section === "pipelines" ? <PipelineSettings canWrite={canWrite && ["Owner", "Admin", "Sales Manager"].includes(user.role)} onChanged={() => void load()}/> : ["reports", "settings"].includes(section) && contentPending ? <SectionLoading title={title} /> : ["reports", "settings"].includes(section) && contentFailed ? null : section === "reports" ? (
-                <Reports data={dashboard} stages={stages} deals={recentDeals} />
+              {section === "automations" ? <AutomationWorkspace user={user}/> : section === "quotations" ? <Quotations key={routeSearch.toString()} dealId={routeSearch.get("deal_id") ?? undefined} canEdit={canWrite} onChanged={() => void load()}/> : section === "workbench" ? <SalesWorkbench userId={user.id} canWrite={canWrite} onChanged={() => void load()}/> : section === "pipelines" ? <PipelineSettings canWrite={canWrite && ["Owner", "Admin", "Sales Manager"].includes(user.role)} onChanged={() => void load()}/> : ["reports", "settings"].includes(section) && contentPending ? <SectionLoading title={title} /> : ["reports", "settings"].includes(section) && contentFailed ? null : section === "reports" ? (
+                <ForecastPanel />
               ) : section === "settings" ? (
                 <Settings
                   user={user}
@@ -792,7 +805,6 @@ export function CRM({ section }: { section: string }) {
                   {section === "communications" && (
                     <EmailTemplates readonly={!canWrite} />
                   )}
-                  {section === "automations" && <AutomationRuns />}
                   <div className="toolbar">
                     <div className="table-search">
                       <Icon name="search" size={17} />
@@ -971,19 +983,19 @@ export function CRM({ section }: { section: string }) {
           {toast}
         </div>
       )}
-      <AutoCreate
+      {singular[section] && <AutoCreate
         key={`auto-create:${section}:${routeSearch.get("new") ?? ""}`}
         onCreate={() => {
           if (canWrite) {
             const params = new URLSearchParams(window.location.search);
             const defaults: Row = { id: "" };
-            for (const key of ["party_id", "contact_id", "entity_type", "entity_id", "due_date", "stage_id", "pipeline_id"]) {
+            for (const key of ["party_id", "contact_id", "entity_type", "entity_id", "due_date", "stage_id", "pipeline_id", "recipient", "template_id"]) {
               const value = params.get(key); if (value) defaults[key] = value;
             }
             setEditor(Object.keys(defaults).length > 1 ? defaults : "new");
           }
         }}
-      />
+      />}
     </div>
   );
 }
@@ -1690,6 +1702,7 @@ function Editor({
               Details
             </button>
             {["accounts", "contacts"].includes(section) && <button className={tab === "context" ? "active" : ""} onClick={() => setTab("context")}>Customer overview</button>}
+            {["leads", "contacts", "accounts", "deals", "tickets"].includes(section) && <button className={tab === "custom" ? "active" : ""} onClick={() => setTab("custom")}>Custom fields</button>}
             {section === "campaigns" && <button className={tab === "members" ? "active" : ""} onClick={() => setTab("members")}>Members</button>}
             {!["automations", "communications"].includes(section) && (
               <button
@@ -1706,7 +1719,7 @@ function Editor({
             {error}
           </div>
         )}
-        {tab === "context" && ["accounts", "contacts"].includes(section) ? <div className="drawer-body"><CustomerContext entity={section === "accounts" ? "parties" : "contacts"} entityId={id} refreshKey={text(initial.version)} onCreate={locked ? undefined : (target, defaults) => { onClose(); router.push(`/${target}?${new URLSearchParams({ new: "1", ...defaults })}`); }}/></div> : tab === "members" && section === "campaigns" ? <div className="drawer-body"><CampaignMembers campaignId={id} canEdit={!locked} refreshKey={text(initial.version)}/></div> : tab === "timeline" ? (
+        {tab === "custom" ? <div className="drawer-body"><CustomRecordFields entity={entityFor(section)} recordId={id} canEdit={!locked}/></div> : tab === "context" && ["accounts", "contacts"].includes(section) ? <div className="drawer-body"><CustomerContext entity={section === "accounts" ? "parties" : "contacts"} entityId={id} refreshKey={text(initial.version)} onCreate={locked ? undefined : (target, defaults) => { onClose(); router.push(`/${target}?${new URLSearchParams({ new: "1", ...defaults })}`); }}/></div> : tab === "members" && section === "campaigns" ? <div className="drawer-body"><CampaignMembers campaignId={id} canEdit={!locked} refreshKey={text(initial.version)}/></div> : tab === "timeline" ? (
           <div className="drawer-body">
             <div className="timeline">
               {timeline.length ? (
@@ -1770,7 +1783,7 @@ function Editor({
               )}
               <fieldset disabled={locked}>
                 <div className="form-grid">
-                  {(fields[section] ?? []).map((field) => (
+                  {(fields[section] ?? []).filter(field => !(section === "automations" && field.key === "due_days" && values.action === "notify")).map((field) => (
                     <label
                       className={field.wide ? "full-width" : ""}
                       key={field.key}
@@ -1817,9 +1830,13 @@ function Editor({
                               ...(field.key === "entity_type"
                                 ? { entity_id: "" }
                                 : {}),
+                              ...(section === "automations" && field.key === "trigger"
+                                ? { conditions: ((values.conditions ?? []) as Condition[]).filter(condition => conditionFields(event.target.value).includes(condition.field)) }
+                                : {}),
                             })
                           }
                         >
+                          {field.key === "source" && text(values.source) && !field.options?.includes(text(values.source)) && <option value={text(values.source)}>{text(values.source)}</option>}
                           {field.type === "stage"
                             ? stages.map((stage) => (
                                 <option value={stage.id} key={stage.id}>
@@ -1833,14 +1850,16 @@ function Editor({
                       ) : (
                         <input
                           name={field.type === "date" ? field.key : undefined}
-                          value={
-                            field.type === "date"
-                              ? text(values[field.key]).slice(0, 10)
-                              : text(values[field.key])
-                          }
+                          {...(field.type === "date"
+                            ? { defaultValue: text(values[field.key]).slice(0, 10) }
+                            : { value: text(values[field.key]) })}
                           type={field.type ?? "text"}
                           min={field.type === "number" ? "0" : undefined}
                           step={field.type === "number" ? "0.01" : undefined}
+                          onBlur={field.type === "date" ? event => {
+                            const value = event.currentTarget.value;
+                            setValues(current => ({ ...current, [field.key]: value }));
+                          } : undefined}
                           onChange={(event) =>
                             setValues({
                               ...values,
@@ -1866,12 +1885,21 @@ function Editor({
               </fieldset>
               {section === "automations" && !locked && (
                 <AutomationConditions
+                  trigger={text(values.trigger) || automationTriggers[0]!}
                   value={(values.conditions ?? []) as Condition[]}
                   onChange={(conditions) =>
                     setValues({ ...values, conditions })
                   }
                 />
               )}
+              {section === "communications" && !locked && <EngagementTemplatePicker entity={text(values.entity_type)} recordId={text(values.entity_id)} initialTemplate={text(initial.template_id)} onApply={content => setValues(current => ({ ...current, ...content }))} />}
+              {id && !readonly && ["leads", "contacts", "accounts", "deals", "tickets"].includes(section) && <section className="context-action">
+                <h3>Keep the conversation connected</h3>
+                <p>Prepare an email draft linked to this record. Sending is not enabled.</p>
+                <button type="button" className="button secondary" onClick={() => { onClose(); router.push(`/communications?${new URLSearchParams({ new: "1", entity_type: entityFor(section), entity_id: id, ...(text(initial.email) ? { recipient: text(initial.email) } : {}) })}`); }}>Prepare email draft</button>
+              </section>}
+              {id && ["leads", "contacts", "accounts", "deals", "tickets"].includes(section) && <EngagementRecordDrafts entity={entityFor(section)} recordId={id} />}
+              {id && section === "deals" && <section className="context-action"><h3>Customer proposals</h3><p>Review quotations and their recorded outcomes for this opportunity.</p><div className="row-actions">{!locked && <Link className="button secondary" href={`/quotations?${new URLSearchParams({ deal_id: id, new: "1" })}`}>Create quotation</Link>}<Link className="button subtle" href={`/quotations?${new URLSearchParams({ deal_id: id })}`}>View quotations</Link></div></section>}
               {section === "leads" && !locked && (
                 <LeadDuplicates
                   id={id}
@@ -2040,87 +2068,6 @@ function Editor({
     </div>
   );
 }
-function Reports({
-  data,
-  stages,
-  deals,
-}: {
-  data: Record<string, unknown>;
-  stages: Stage[];
-  deals: Row[];
-}) {
-  const router = useRouter();
-  const metrics = (data.metrics ?? data) as Record<string, unknown>;
-  const source = (data.lead_sources ?? data.sources ?? []) as Row[];
-  return (
-    <>
-      <div className="reports-intro">
-        <Icon name="reports" size={27} />
-        <div>
-          <h2>The complete picture, from your records.</h2>
-          <p>
-            Live sales and activity totals for your workspace. Export individual
-            record lists for deeper analysis.
-          </p>
-        </div>
-      </div>
-      <div className="report-grid">
-        {Object.entries(metrics)
-          .filter(
-            ([key, value]) =>
-              !["period", "period_basis"].includes(key) &&
-              (typeof value === "number" || typeof value === "string"),
-          )
-          .map(([key, value]) => (
-            <div className="report-stat" key={key}>
-              <span>{label(key)}</span>
-              <strong>
-                {/value|revenue|amount|weighted_pipeline/.test(key)
-                  ? amount(value)
-                  : key === "win_rate" ? `${text(value)}%` : text(value)}
-              </strong>
-            </div>
-          ))}
-      </div>
-      {source.length > 0 && (
-        <section className="panel">
-          <div className="panel-heading">
-            <h2>Where your leads come from</h2>
-          </div>
-          <div className="source-list">
-            {source.map((item, index) => (
-              <div key={item.id ?? index}>
-                <span>{text(item.source ?? item.name)}</span>
-                <strong>{text(item.count)}</strong>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-      <section className="panel">
-        <div className="panel-heading">
-          <h2>Recent deals</h2>
-          <Link href="/deals" className="text-link">
-            Explore deals
-            <Icon name="arrow" size={16} />
-          </Link>
-        </div>
-        {deals.length ? (
-          <DataTable
-            rows={deals}
-            columns={["name", "amount", "stage_id", "status"]}
-            stages={stages}
-            onSelect={(row) => {
-              router.push(`/deals?id=${row.id}`);
-            }}
-          />
-        ) : (
-          <p className="quiet-empty">Create deals to see outcomes here.</p>
-        )}
-      </section>
-    </>
-  );
-}
 function Settings({
   user,
   integrations,
@@ -2132,7 +2079,8 @@ function Settings({
   onUser: (user: User) => void;
   notify: (message: string) => void;
 }) {
-  const [tab, setTab] = useState("profile");
+  const settingsSearch = useSearchParams();
+  const [tab, setTab] = useState(["profile", "team", "lead-capture", "custom-fields", "integrations", "security"].includes(settingsSearch.get("tab") ?? "") ? settingsSearch.get("tab")! : "profile");
   const [team, setTeam] = useState<(User & { is_active?: boolean })[]>([]);
   const [securityRevision, setSecurityRevision] = useState(0);
   const [error, setError] = useState("");
@@ -2201,7 +2149,7 @@ function Settings({
   return (
     <div className="settings-layout">
       <nav className="settings-nav" aria-label="Settings sections">
-        {["profile", "team", "integrations", "security"].map((value) => (
+        {["profile", "team", "lead-capture", "custom-fields", "integrations", "security"].map((value) => (
           <button
             key={value}
             onClick={() => {
@@ -2210,7 +2158,7 @@ function Settings({
             }}
             className={tab === value ? "active" : ""}
           >
-            {label(value)}
+            {value === "lead-capture" ? "Lead capture" : value === "custom-fields" ? "Custom fields" : label(value)}
           </button>
         ))}
       </nav>
@@ -2403,34 +2351,11 @@ function Settings({
             )}
           </>
         )}
+        {tab === "lead-capture" && <LeadCaptureSettings canManage={["Owner", "Admin", "Sales Manager"].includes(user.role)}/>}
+        {tab === "custom-fields" && <CustomFieldSettings canManage={["Owner", "Admin"].includes(user.role)}/>}
         {tab === "integrations" && (
           <>
-            <h2>Connected tools</h2>
-            <p className="muted">
-              Connections are only active when a real provider is configured.
-            </p>
-            <div className="integration-list">
-              {integrations.map((integration, index) => (
-                <div key={integration.id ?? index}>
-                  <div>
-                    <strong>
-                      {text(integration.name ?? integration.provider)}
-                    </strong>
-                    <p>
-                      {text(integration.description ?? integration.message) ||
-                        "Provider credentials are managed in deployment settings."}
-                    </p>
-                  </div>
-                  <Badge value={integration.status ?? "Not connected"} />
-                </div>
-              ))}
-              {!integrations.length && (
-                <p className="quiet-empty">
-                  No providers configured. Email can be saved as drafts; Gmail
-                  connection is planned for later.
-                </p>
-              )}
-            </div>
+            <IntegrationCatalog integrations={integrations}/>
           </>
         )}
       </section>
@@ -2883,6 +2808,7 @@ function TicketConversation({
   );
 }
 function EmailTemplates({ readonly }: { readonly: boolean }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [error, setError] = useState("");
@@ -2952,6 +2878,7 @@ function EmailTemplates({ readonly }: { readonly: boolean }) {
                 <strong>{text(row.subject)}</strong>
                 <p>{text(row.body)}</p>
               </div>
+              <button type="button" className="button secondary" disabled={readonly} onClick={() => router.push(`/communications?${new URLSearchParams({ new: "1", template_id: row.id })}`)}>Use template</button>
               <button
                 className="button subtle"
                 disabled={readonly}
@@ -2989,53 +2916,6 @@ function EmailTemplates({ readonly }: { readonly: boolean }) {
               {busy ? "Saving…" : "Save template"}
             </button>
           </form>
-        </div>
-      )}
-    </section>
-  );
-}
-function AutomationRuns() {
-  const [open, setOpen] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [error, setError] = useState("");
-  useEffect(() => {
-    if (open)
-      api<List>("/automations/runs")
-        .then((result) => setRows(result.items))
-        .catch((failure) => setError((failure as Error).message));
-  }, [open]);
-  return (
-    <section className="utility-panel">
-      <button
-        className="utility-toggle"
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-      >
-        <Icon name="clock" size={17} />
-        <span>Automation execution log</span>
-        <Icon name="down" size={16} />
-      </button>
-      {open && (
-        <div className="utility-body">
-          {error && <p role="alert">{error}</p>}
-          {rows.length ? (
-            rows.map((row) => (
-              <div className="automation-run" key={row.id}>
-                <span>
-                  {text(row.rule_name ?? row.trigger ?? row.automation_id)}
-                </span>
-                <Badge value={row.status} />
-                <span>
-                  {formatTimestamp(row.created_at)}
-                </span>
-              </div>
-            ))
-          ) : (
-            <p className="muted">
-              No automations have run yet. New matching records will trigger
-              enabled rules.
-            </p>
-          )}
         </div>
       )}
     </section>

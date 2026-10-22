@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Relay CRM</title>
+  <rect width="64" height="64" rx="14" fill="#163e30"/>
+  <path d="M17 19h10v6c3-4.5 6.5-7 12-7h5v10h-5c-7 0-12 4-12 12v8H17V19Z" fill="#f7f8f5"/>
+  <circle cx="44" cy="43" r="5" fill="#dae6d3"/>
+</svg>

@@ -1,10 +1,73 @@
 # Relay CRM delivery checklist — current request
 
+## Public source preparation — 2026-10-22
+
+- [x] Review candidate source/docs for embedded credentials and machine-specific state; exclude local deliverables and runtime data.
+- [x] Include append-only migrations 0006–0010 and verify generated OpenAPI/TypeScript consistency.
+- [x] Backend: 215 tests passed, one optional integration test deselected; seven backup tests, Ruff/format and mypy passed.
+- [x] Frontend: lint/types, five proxy tests, isolated production build and production dependency audit passed (zero reported vulnerabilities).
+- [x] Retain the removed saved-view UI journey as explicitly skipped historical coverage; no automated E2E or Docker execution in this publication pass.
+
+## Presentation cleanup — 2026-10-22
+
+- [x] Remove the full-width saved-view bar from all shared CRM list screens.
+- [x] Frontend lint/types pass; Chrome confirms cleaned pipeline before new deck screenshots.
+- [x] Deliver the concise Relay hackathon PowerPoint with real Chrome screenshots and team credits, saved locally as `outputs/relay-hackathon.pptx` and copied to Downloads. Presentation files are not included in the source repository.
+
+Presentation verification: eight slides rendered and visually reviewed; native editable text/diagram objects, six product screenshots and eight speaker-note sections; valid PPTX archive; all slide bounds/content-overlap checks passed. Both team names checked. The PowerPoint is an editable reconstruction of the Superdesign draft; font/layout rendering may differ across presentation apps.
+
+
+## Hackathon workflow expansion — completed local scope
+
+- [x] Durable scheduled multi-step automations with conditions, pause/cancel/retry, linked results and permission checks.
+- [x] Typed custom fields, manager configuration, record editing and compatible conversion handoff.
+- [x] Local lead capture forms, validated consent, duplicate handling and round-robin assignment connected to CRM events.
+- [x] Integrate UI and honest connector catalog; regenerate contracts and run applicable backend/frontend checks.
+- [x] Manually verify the new connected flows in Codex in Chrome; record actual outcomes and remaining limitations.
+
+Actual verification: 211 combined backend tests passed (one optional integration test deselected); final changes additionally passed 23 intake/workflow, 20 customization and 44 CRM regression checks. Ruff/format (91 files), mypy (69 sources), final frontend lint/types, five proxy tests and final isolated production build passed. Chrome verified capture → assigned lead → task → delayed notification, custom value → converted contact, duplicate inquiry → two receipts/one lead, and persisted job results after restart. Full mobile/accessibility and every failure branch remain unverified in Chrome. No automated E2E, Docker or deployment run.
+
+Next unchecked product items (outside the completed hackathon pass):
+
+- [ ] Support intake, response/resolution SLA and customer portal.
+- [ ] Product catalog, shared views/bulk actions, custom-field filtering/import/export and deeper reporting.
+- [ ] External connectors remain deferred by explicit user instruction.
+
+## Local connected CRM audit and build — active scope (2026-10-22)
+
+Latest instruction: **local Chrome feature review only; no further automated E2E runs**. The combined automated suite was stopped. Docker/deployment/TLS/release work is outside this task. Earlier unchecked browser/deployment gates remain below as historical records and are superseded for the current session; they are not marked passed or silently resumed. Implementation checks below are separate from manual acceptance.
+
+- [x] Research official commercial CRM documentation and open-source GitHub/docs; record major capabilities, gaps and links in `docs/CRM_AUDIT_2026-10-22.md`.
+- [x] Implement/API-test quotations with exact server totals, immutable issued terms, decision history, print view and transactional optional acceptance-to-won; add migration 0006.
+- [x] Implement/API-test sales forecasting with relevant close dates, weighted values, monthly breakdown, attention lists and paginated drill-through; synchronize open-stage probability changes to open deals.
+- [x] Implement/API-test private saved views, validated filter presets and scoped update/delete; add migration 0007. List controls were integrated and verified, then removed during presentation cleanup; API/storage remain.
+- [x] Connect CRM records, email templates and persisted unsent drafts; expose all supported automation triggers and compatible conditions.
+- [x] Repair permitted assigned-record updates without exposing private linked customers; repair native date entry persistence; add Relay tab icon.
+- [x] Final backend checks: 172 tests passed, one optional test deselected; mypy passed for 56 source files.
+- [x] Final frontend lint, TypeScript, five proxy tests and isolated production build passed. Earlier nine frontend unit tests also passed.
+- [x] Manual Chrome: signup → lead → linked contact/company/deal conversion → quotation create/issue/accept with deal won → forecast shows ₹1,25,000.50.
+- [x] Manual Chrome: company overview → pre-linked dated task → correct My Day and Calendar entries.
+- [x] Manual Chrome: search contacts for Mira → save private “Northstar contacts” view → reload → view exists and applies.
+- [x] Manual Chrome: contact → recipient-prefilled email draft → save/reopen with contact retained → create/apply name/company/email template → resolved values saved. This remains an unsent draft.
+- [x] Manual Chrome: company-linked support ticket → internal note → Resolved save; list retains Resolved status.
+- [x] Manual Chrome: update saved filter/name, observe save confirmation, delete disposable view and observe deletion confirmation.
+- [x] Manual Chrome: campaign creation with ₹5,000.50 budget → search/add existing converted Mira lead → one member, one converted lead and 100% conversion → remove membership → zero members; Leads list confirms Mira is unchanged. This verifies a pre-converted member, not conversion while enrolled or campaign revenue attribution.
+- [x] Manual Chrome: create leads.created automation with one-day task → create Sam Fictional Inquiry → My Tasks shows “Review new customer inquiry” due 2026-10-23 → open confirms Sam lead link and automation note → complete → list status completed. Other triggers, condition branches and notification actions are not implied by this path.
+- [x] Complete bounded local feature review and source-backed handoff in `docs/CRM_AUDIT_2026-10-22.md`. Exhaustive mobile/accessibility and every workflow permutation remain unverified.
+
+No new runtime dependencies or provider credentials are required. Restart the local API for migrations `0006_quotations.sql` and `0007_saved_views.sql`. Future ERP, external communications and production readiness remain unclaimed.
+
+## Related-record layout repair — 2026-10-22
+
+- [x] Replace obsolete native-select spacing with an 8px grid gap; match search input sizing to the dropdown and preserve selection behavior.
+- [x] Frontend lint and TypeScript checks passed; design hook reported no deterministic issues in the changed stylesheet.
+- [ ] Live desktop/mobile visual confirmation of this narrow CSS change; browser verification stopped at the user's direction.
+
 The latest user instruction supersedes the original Phase 0 approval stop and rigid ERP stack: deliver a working B2B sales and customer-support CRM now. The original ERP roadmap is preserved below as future scope, not a claim that those ERP modules exist. Implementation checks below mean the code is delivered; runtime browser acceptance is tracked separately and remains pending where the environment prevents it.
 
-## Connected CRM coverage — current active work (2026-10-12)
+## Connected CRM coverage — historical session (2026-10-12)
 
-Prioritize core B2B sales/support coverage for the hackathon. No additional role-matrix work is required in this pass; existing authentication, tenant isolation and backend checks remain in force. Checked implementation/API items below do not mark their separate browser acceptance complete. Evidence is being collected in [`artifacts/crm-coverage/ACCEPTANCE.md`](artifacts/crm-coverage/ACCEPTANCE.md).
+Prioritize core B2B sales/support coverage for the hackathon. No additional role-matrix work is required in this pass; existing authentication, tenant isolation and backend checks remain in force. Checked implementation/API items below do not mark their separate browser acceptance complete. Evidence was collected in `artifacts/crm-coverage/ACCEPTANCE.md` (local-only audit output, not included in the source repository).
 
 - [x] Parallel backend, relationship/campaign UI and workbench/pipeline UI ownership; root integration, independent contract review and preserved green-and-cream design.
 - [x] Implement and API-test company/contact overview with real full totals, paginated related records/history and customer-linked creation actions.
@@ -28,7 +91,7 @@ Prioritize core B2B sales/support coverage for the hackathon. No additional role
 
 ## End-to-end audit and repair — 2026-10-12
 
-Evidence: [`artifacts/crm-audit/ACCEPTANCE.md`](artifacts/crm-audit/ACCEPTANCE.md) separates PASS, FAIL, BLOCKED and NOT IMPLEMENTED, with runtime evidence and outstanding scope.
+Local evidence: `artifacts/crm-audit/ACCEPTANCE.md` separates PASS, FAIL, BLOCKED and NOT IMPLEMENTED, with runtime evidence and outstanding scope. Audit artifacts are not included in the source repository.
 
 - [x] Parallel UI, API/data and import/export ownership; independent combined-code review; preserve existing files and user's original Chrome login.
 - [x] Repair CSV empty-filter exports, malformed/header/row validation, ambiguous duplicates, safe roundtrips and all-page sorting; verify persisted import/export data in real SQLite/API tests.

@@ -13,7 +13,9 @@ __pycache__/
 htmlcov/
 node_modules/
 .next/
+.next-*/
 out/
+/outputs/
 *.tsbuildinfo
 playwright-report/
 test-results/
@@ -24,6 +26,13 @@ celerybeat-schedule*
 *.db
 *.db-shm
 *.db-wal
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3-shm
+*.sqlite3-wal
 
 backups/
 restore-staging/

@@ -73,7 +73,7 @@ test("campaign member search, duplicate-safe addition, conversion totals and rem
   const members = dialog.getByRole("region", { name: "Campaign members", exact: true });
   for (let addition = 0; addition < 2; addition += 1) {
     await members.getByLabel("Find a lead", { exact: true }).fill("QA Campaign Prospect");
-    await members.getByRole("button", { name: /QA Campaign Prospect/ }).click();
+    await members.getByRole("button", { name: /^QA Campaign Prospect/ }).click();
     await members.getByRole("button", { name: "Add member", exact: true }).click();
     await expect(members.getByText("QA Campaign Prospect is a campaign member.", { exact: true })).toBeVisible();
     await expect(members.getByRole("link", { name: /QA Campaign Prospect/ })).toHaveCount(1);

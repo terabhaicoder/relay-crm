@@ -74,6 +74,26 @@ class CRMRepository:
             raise HTTPException(404, "Stage not found.")
         return result
 
+    def existing_reference(self, entity: str, record_id: str) -> Any:
+        """Resolve an unchanged link for integrity validation, never for API output.
+
+        The caller must already authorize the record holding this reference.
+        Assigned work may refer to a customer's record owned by a colleague;
+        that does not grant the assignee read access to the customer's record.
+        New or changed references must still use get().
+        """
+        model = self.model(entity)
+        record = self.db.scalar(
+            select(model).where(
+                model.org_id == self.user.org_id,
+                model.id == record_id,
+                model.deleted_at.is_(None),
+            )
+        )
+        if record is None:
+            raise HTTPException(404, "Record not found.")
+        return record
+
     def list(
         self,
         entity: str,

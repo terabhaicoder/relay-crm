@@ -8,6 +8,7 @@ const paths: Record<string, string> = {
   accounts:
     "M4 21V5h10v16 M14 10h6v11 M2 21h20 M7 8h4 M7 12h4 M7 16h4 M17 13v2 M17 17v2",
   deals: "M3 4h5v16H3z M10 4h5v11h-5z M17 4h4v14h-4z",
+  quotations: "M5 3h10l4 4v14H5z M14 3v5h5 M8 12h8 M8 16h5",
   activities: "M9 5H5v16h14V5h-4 M9 3h6v4H9z M8 12l2 2 5-5 M8 18h8",
   calendar: "M4 5h16v16H4z M4 10h16 M8 3v4 M16 3v4 M8 14h2 M14 14h2 M8 18h2",
   campaigns: "M3 10v5h4l10 4V6L7 10H3 M7 15l2 6h3l-2-5 M20 8v8",

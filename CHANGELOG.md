@@ -1,5 +1,70 @@
 # Changelog
 
+## 2026-10-22 — Public source preparation
+
+- Prepared the connected CRM implementation, migrations 0006–0010, generated contracts and tests for public `main` publication.
+- Excluded local presentation output and additional SQLite sidecar formats; retained existing environment, database, upload, backup and build exclusions. Removed machine-specific documentation paths and corrected current feature/roadmap descriptions.
+- Marked the saved-view UI journey as skipped because its control was intentionally removed; retained its active backend/API coverage.
+- Release validation: 215 backend tests passed, one optional integration test deselected; seven backup tests and five proxy tests passed; Ruff/format (94 files), mypy (69 sources), frontend lint/types, generated-contract consistency and production build passed. Production npm audit reported zero vulnerabilities. Two upstream Python deprecation warnings remain. No automated E2E, Docker or deployment run.
+
+## 2026-10-22 — Relay hackathon PowerPoint
+
+- Created an eight-slide editable PowerPoint with Relay branding, six actual Chrome product screenshots, concise connected-workflow story and credits for Paarth Panthri and Nishanth KS.
+- Clearly distinguished fictional demo records, working local features and future connectors; added presenter notes for quotation, forecast and communications boundaries.
+- Delivered `outputs/relay-hackathon.pptx` and a Downloads copy. These presentation files are local deliverables, not included in the source repository.
+- Rendered and visually reviewed every slide; verified eight slides/notes, editable objects, valid archive, correct credits and no bounds/content-overlap violations. Corrected the preview's year, logo filter and contrast. No new app dependency, migration, Docker or automated E2E run.
+- Updated the demo guide to reflect implemented local capture and removal of saved-view controls.
+
+## 2026-10-22 — Cleaner lists for the hackathon deck
+
+Removed the full-width Saved views / Current filters / Save current view bar from CRM lists at the user’s request. Search, filters, sorting and pipeline controls remain. The saved-view API and existing stored presets are preserved, but their previous list UI is no longer exposed. Frontend lint/types passed; Chrome confirmed no bar on Pipeline and fresh screenshots use the cleaned UI. No migration or dependency change.
+
+
+## 2026-10-22 — Local capture, durable workflows and custom fields
+
+- Added manager-configured public local lead forms, consent/validation, duplicate-safe receipt storage, round-robin routing and real inquiry counters/navigation. Capture calls the CRM service, so audit and automation effects commit with the new lead. Migration 0010.
+- Added durable ordered automation steps for tasks, in-app notifications and owner assignment; delays, current permission/condition rechecks, immutable snapshots, pause cancellation, retry/cancel, linked history and API-owned local worker. Migration 0008; no external queue dependency.
+- Added typed optional custom fields on leads/contacts/companies/deals/tickets, versioned saves, archive/restore and audit history. Compatible values follow conversion and fill unset values during merge; intake and automation links also follow merges. Migration 0009.
+- Integrated dedicated workflow workspace, custom-field settings/drawers, local capture page and honest planned connector catalog. Fixed inherited checkbox sizing, intake refresh/retry states and custom lead-source display. Preserved Relay's existing visual system and favicon.
+- Combined backend: 211 passed, one optional test deselected, two upstream warnings. Final targeted intake/workflow: 23 passed; customization: 20 passed; existing CRM regression: 44 passed. Ruff/format and mypy 69 sources passed. Final frontend lint/types, five proxy tests and production build passed.
+- Manually verified in Chrome: form → lead/owner → immediate task → one-minute delayed notification; custom lead field → converted contact; duplicate inquiry after conversion → two receipts/one lead. Desktop form and execution-history screenshots reviewed. No automated E2E, Docker, external sends or deployment work.
+- Restart the local API for 0008–0010 and the worker. No new dependency, environment secret or connector credentials required. External connectors remain explicitly deferred; support intake/SLA, catalog, shared views and deeper reporting remain future scope, not complete ERP claims.
+
+
+## 2026-10-22 — Connected sales workflow, forecast and private views
+
+### Delivered
+
+- Benchmarked major workflows against official commercial CRM documentation and open-source projects; capability matrix, source links and remaining gaps are in `docs/CRM_AUDIT_2026-10-22.md`.
+- Added the commercial module and migration `0006_quotations.sql`: deal-linked quotation drafts, exact Decimal line/discount totals, customer snapshots, locked issued terms, recorded decisions, printable documents and optional atomic acceptance-to-won. Decision evidence is entered by the user; no delivery, electronic signature, invoice, tax or payment is claimed.
+- Added a close-date sales forecast with weighted/open/won/lost values, monthly totals, pipeline/date filters, owner filtering in the UI and API, paginated drill-through and overdue/undated attention lists. Open-stage probability changes now update affected open deals and their versions without changing closed outcomes.
+- Added the views module and migration `0007_saved_views.sql`: private, validated search/status/sort presets with save/apply/update/delete; deal views retain pipeline and board/table mode.
+- Connected record-to-email creation, recipient prefill, template application, paginated linked drafts and reopen/edit with preserved relationships. Email remains an unsent preparation workflow; adding credentials alone does not implement a mailbox adapter.
+- Exposed all eleven supported automation events with compatible condition fields. Fixed assigned-record workflow updates while retaining private customer access controls, and native browser date values being replaced during React updates.
+- Integrated quotation/deal actions, forecasting, saved views and the Relay tab icon (`frontend/src/app/icon.svg`) while preserving the existing design and prior stylesheet edits. Updated generated API contracts. No applied migration was changed and no new runtime dependency was introduced.
+
+### Actual verification and current scope
+
+- Final backend suite: **172 passed, one optional test deselected**. Mypy: **56 source files passed**. Final frontend ESLint, TypeScript, **five proxy tests** and isolated production build passed; the earlier **nine frontend unit tests** also passed.
+- Before the latest instruction, targeted automated browser checks ran and the combined suite was attempted. **The combined run was stopped at the user's request; no complete-suite pass is claimed. No further automated E2E runs are authorized in this session.**
+- Current review is **local only, manual Chrome**. Verified signup → lead → linked contact/company/deal conversion → quotation create/issue/record acceptance with deal won → forecast showing **₹1,25,000.50**. Also verified company overview → pre-linked dated task → correct My Day and Calendar entries.
+- Further manual Chrome review verified contacts search “Mira” → private “Northstar contacts” view save → reload/apply; contact → prefilled email draft → save/reopen retaining the contact → create/apply template with name/company/email resolving to Mira Audit / Fictional Northstar Labs / mira.audit@example.test → save. The draft remains unsent.
+- Manual support review created a company-linked ticket, added an internal note and saved Resolved; the list retained that status.
+- Manual campaign review created a campaign with ₹5,000.50 budget, searched/added the existing converted Mira lead and observed one member, 1/1 converted and 100%. Removing membership returned the count to zero; the Leads list confirmed Mira remained unchanged. This is pre-converted-member tracking, not evidence of in-campaign conversion or revenue attribution.
+- Manual automation review created a leads.created rule with a one-day task, created Sam Fictional Inquiry and found “Review new customer inquiry” due 2026-10-23 in My Tasks. Opening it confirmed the Sam lead link and automation note; completing it persisted completed status in the list. Other triggers, condition branches and notification actions were not covered by this manual path.
+- Manual Chrome also verified updating the saved filter/name and deleting the disposable view with success confirmation. Historical checks elsewhere describe their own snapshots; this bounded review does not claim exhaustive browser/accessibility coverage.
+- Docker, remote deployment, TLS and production release certification are outside the active task. Earlier deployment checkboxes remain historical and unchecked. No complete ERP claim is made.
+
+### Local setup and remaining work
+
+Restart the local API to apply migrations 0006/0007 and load the added routes. No new environment variables or external provider credentials are required for these local workflows. The bounded manual Chrome review is complete; CHECKLIST.md distinguishes its verified paths from historical and future scope. Major remaining product gaps include public intake/routing, real communications, support intake/SLA, custom fields/shared views/bulk actions, scheduled multi-step automation and deeper forecasting/integrations.
+
+
+## 2026-10-22 — Related-record field spacing
+
+- Fixed the search input touching the “None” dropdown: the former spacing rule targeted a hidden native select. The relation field now uses an 8px grid gap and consistent input sizing; existing search, selection and clearing behavior is unchanged.
+- Frontend lint and TypeScript checks passed. Design hook found no deterministic stylesheet issues; live visual verification was not performed, following the user's request to change code only. No dependencies, migrations or credentials needed.
+
 ## 2026-10-12 — Connected CRM coverage for the hackathon
 
 ### Implemented

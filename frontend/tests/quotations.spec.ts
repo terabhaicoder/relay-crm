@@ -1,0 +1,68 @@
+import { randomUUID } from "node:crypto";
+import { expect, test } from "@playwright/test";
+
+test("quotation draft to recorded acceptance closes the linked deal with the exact total", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const token = randomUUID();
+  const signup = await page.request.post("/api/v1/auth/signup", { data: {
+    name: "Quotation Reviewer", email: `quote-${token}@example.test`,
+    password: "Quotation-QA-2026!", company_name: `QA quotation ${token}`,
+  } });
+  expect(signup.status()).toBe(201);
+  const companyResponse = await page.request.post("/api/v1/parties", { headers: { "Idempotency-Key": randomUUID() }, data: { name: "QA Quotation Customer" } });
+  expect(companyResponse.status()).toBe(201);
+  const company = await companyResponse.json() as { id: string };
+  const dealResponse = await page.request.post("/api/v1/deals", { headers: { "Idempotency-Key": randomUUID() }, data: { name: "QA Quotation Project", party_id: company.id, amount: "50.00" } });
+  expect(dealResponse.status()).toBe(201);
+  const deal = await dealResponse.json() as { id: string };
+  await page.goto(`/quotations?deal_id=${deal.id}&new=1`);
+  const form = page.getByRole("form", { name: "New quotation" });
+  await expect(form.getByText("QA Quotation Project", { exact: true })).toBeVisible();
+  await form.getByLabel("Quotation title").fill("QA Implementation Offer");
+  await form.getByLabel("Description 1").fill("Consulting");
+  await form.getByLabel("Quantity 1").fill("1.005");
+  await form.getByLabel("Unit price 1").fill("100");
+  await form.getByRole("button", { name: "Add line", exact: false }).click();
+  await form.getByLabel("Description 2").fill("Setup");
+  await form.getByLabel("Quantity 2").fill("3");
+  await form.getByLabel("Unit price 2").fill("0.3350");
+  await form.getByLabel("Discount (INR)").fill("1.00");
+  await form.getByLabel("Terms", { exact: true }).fill("Tax excluded. Deliver in two weeks.");
+  await form.getByRole("button", { name: "Save draft", exact: true }).click();
+  await expect(form).toBeHidden();
+  const detail = page.getByRole("article", { name: "Quotation details" });
+  await expect(detail.getByRole("heading", { name: "QA Implementation Offer" })).toBeVisible();
+  const list = await page.request.get(`/api/v1/quotations?deal_id=${deal.id}`);
+  expect(list.ok()).toBeTruthy();
+  const quote = (await list.json() as { items: { id: string; total: string; subtotal: string }[] }).items[0];
+  expect(quote).toMatchObject({ subtotal: "101.51", total: "100.51" });
+  await detail.getByRole("button", { name: "Issue quotation", exact: true }).click();
+  await detail.getByRole("button", { name: "Confirm issue", exact: true }).click();
+  await expect(detail.getByText("QUOTATION · ISSUED", { exact: true })).toBeVisible();
+  await expect(detail.getByRole("button", { name: "Edit draft", exact: true })).toHaveCount(0);
+  await detail.getByRole("button", { name: "Record acceptance", exact: true }).click();
+  await detail.getByLabel("Decision note").fill("Customer approved on call; QA reference 42.");
+  const closeDeal = detail.getByRole("checkbox", { name: /Also mark the linked deal won/ });
+  await expect(closeDeal).toBeEnabled();
+  await closeDeal.check();
+  await detail.getByRole("button", { name: "Confirm acceptance", exact: true }).click();
+  await expect(detail.getByText("QUOTATION · ACCEPTED", { exact: true })).toBeVisible();
+  const savedDeal = await page.request.get(`/api/v1/deals/${deal.id}`);
+  expect(await savedDeal.json()).toMatchObject({ status: "won", amount: "100.51" });
+  await page.goto(`/quotations?id=${quote!.id}`);
+  await expect(detail.getByText("QUOTATION · ACCEPTED", { exact: true })).toBeVisible();
+  await expect(detail.getByText("Customer approved on call; QA reference 42.", { exact: true })).toBeVisible();
+  await expect(detail.getByRole("link", { name: /QA Quotation Project/ })).toHaveAttribute("href", `/deals?id=${deal.id}`);
+  const printWindow = page.waitForEvent("popup");
+  await detail.getByRole("button", { name: "Print / Save PDF", exact: true }).click();
+  const printable = await printWindow;
+  await expect(printable.getByRole("heading", { name: "QA Implementation Offer", exact: true })).toBeVisible();
+  await expect(printable.getByText("Total: ₹100.51", { exact: true })).toBeVisible();
+  await expect(printable.getByText("Commercial estimate. Tax is excluded. This is not an invoice or payment receipt.", { exact: true })).toBeVisible();
+  await printable.close();
+  await page.screenshot({ path: "../artifacts/crm-comprehensive-audit/research/quotations-desktop.png", fullPage: true, animations: "disabled" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(detail.getByText("QUOTATION · ACCEPTED", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: "../artifacts/crm-comprehensive-audit/research/quotations-mobile.png", fullPage: true, animations: "disabled" });
+});

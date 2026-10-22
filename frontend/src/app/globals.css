@@ -2344,15 +2344,16 @@ small {
   margin: 0 0 18px;
 }
 .relation-field {
-  display: block;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin-top: 7px;
 }
 .relation-field input {
-  font-size: 11px;
-  min-height: 33px;
-  padding: 7px 10px;
-}
-.relation-field select {
-  margin-top: 5px;
+  margin-top: 0;
+  font: inherit;
+  min-height: 42px;
+  padding: 10px 12px;
 }
 .related-link {
   margin-top: 7px;

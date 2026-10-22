@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -6,6 +7,7 @@ from uuid import uuid4
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import Engine, text
+from sqlalchemy.orm import sessionmaker
 from starlette.middleware.base import RequestResponseEndpoint
 
 from app.core.bootstrap import initialize_database
@@ -16,9 +18,15 @@ from app.core.limits import BodyLimitMiddleware, RateLimiter
 from app.core.logging import configure_logging
 from app.health.router import router as health_router
 from app.modules.auth.router import router as auth_router
+from app.modules.commercial.router import router as commercial_router
+from app.modules.crm.reporting_router import router as reporting_router
 from app.modules.crm.router import router as crm_router
+from app.modules.customization.router import router as customization_router
 from app.modules.engagement.router import router as engagement_router
+from app.modules.engagement.workflows import worker_loop
 from app.modules.files.router import router as files_router
+from app.modules.intake.router import router as intake_router
+from app.modules.views.router import router as views_router
 
 logger = logging.getLogger(__name__)
 
@@ -47,9 +55,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.engine = engine
         app.state.settings = config
         app.state.probe = LocalDatabaseProbe(engine)
+        stop_worker = asyncio.Event()
+        worker = (
+            asyncio.create_task(
+                worker_loop(sessionmaker(bind=engine, expire_on_commit=False), stop_worker)
+            )
+            if config.environment != "test"
+            else None
+        )
         try:
             yield
         finally:
+            stop_worker.set()
+            if worker:
+                await worker
             engine.dispose()
 
     app = FastAPI(
@@ -62,6 +81,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = config
     app.state.auth_limiter = RateLimiter()
+    app.state.intake_limiter = RateLimiter()
     app.add_middleware(BodyLimitMiddleware)
     app.add_middleware(
         CORSMiddleware,
@@ -115,5 +135,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(auth_router, prefix="/api/v1")
     app.include_router(engagement_router, prefix="/api/v1")
     app.include_router(files_router, prefix="/api/v1")
+    app.include_router(reporting_router, prefix="/api/v1")
+    app.include_router(commercial_router, prefix="/api/v1")
+    app.include_router(views_router, prefix="/api/v1")
+    app.include_router(customization_router, prefix="/api/v1")
+    app.include_router(intake_router, prefix="/api/v1")
     app.include_router(crm_router, prefix="/api/v1")
     return app

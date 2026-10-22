@@ -160,8 +160,28 @@ def pipelines(db: Session, user: Any) -> list[dict[str, Any]]:
     ]
 
 
-def validate_references(db: Session, user: Any, entity: str, data: dict[str, Any]) -> None:
+def validate_references(
+    db: Session,
+    user: Any,
+    entity: str,
+    data: dict[str, Any],
+    *,
+    existing: dict[str, Any] | None = None,
+) -> None:
     repo = CRMRepository(db, user)
+
+    def reference(key: str, target: str) -> Any:
+        unchanged = existing is not None and existing.get(key) == data[key]
+        if key == "entity_id":
+            unchanged = (
+                unchanged
+                and existing is not None
+                and (existing.get("entity_type") == data.get("entity_type"))
+            )
+        if unchanged:
+            return repo.existing_reference(target, data[key])
+        return repo.get(target, data[key])
+
     if (
         user.role in {"Sales Rep", "Sales Representative"}
         and "owner_id" in data
@@ -180,17 +200,17 @@ def validate_references(db: Session, user: Any, entity: str, data: dict[str, Any
             raise HTTPException(403, "You can only assign your own records.")
     for key, target in [("party_id", "parties"), ("contact_id", "contacts"), ("deal_id", "deals")]:
         if data.get(key):
-            repo.get(target, data[key])
+            reference(key, target)
     if data.get("party_id") and data.get("contact_id"):
-        contact = repo.get("contacts", data["contact_id"])
+        contact = reference("contact_id", "contacts")
         if contact.party_id and contact.party_id != data["party_id"]:
             raise HTTPException(422, "The selected contact belongs to a different company.")
     if data.get("deal_id"):
-        deal = repo.get("deals", data["deal_id"])
+        deal = reference("deal_id", "deals")
         if data.get("party_id") and deal.party_id and deal.party_id != data["party_id"]:
             raise HTTPException(422, "The selected deal belongs to a different company.")
         if data.get("contact_id") and deal.party_id:
-            contact = repo.get("contacts", data["contact_id"])
+            contact = reference("contact_id", "contacts")
             if contact.party_id and contact.party_id != deal.party_id:
                 raise HTTPException(
                     422, "The selected contact and deal belong to different companies."
@@ -199,7 +219,7 @@ def validate_references(db: Session, user: Any, entity: str, data: dict[str, Any
         related_type = data.get("entity_type")
         if related_type not in {"leads", "contacts", "parties", "deals", "tickets", "campaigns"}:
             raise HTTPException(422, "Choose a supported related record type.")
-        repo.get(str(related_type), data["entity_id"])
+        reference("entity_id", str(related_type))
     elif data.get("entity_type"):
         raise HTTPException(422, "Choose a related record.")
     for key in ("next_follow_up", "expected_close_date", "due_date", "start_date", "end_date"):
@@ -282,6 +302,10 @@ def create(db: Session, user: Any, entity: str, payload: dict[str, Any]) -> Any:
 
 def modify(db: Session, user: Any, entity: str, record_id: str, payload: dict[str, Any]) -> Any:
     require_write(user)
+    if entity in {"contacts", "deals"} and any(
+        key in payload for key in ("party_id", "contact_id")
+    ):
+        ensure_write_transaction(db)
     repo = CRMRepository(db, user)
     record = repo.get(entity, record_id, lock=True)
     values = validated(entity, payload, partial=True)
@@ -316,8 +340,19 @@ def modify(db: Session, user: Any, entity: str, record_id: str, payload: dict[st
             visited.add(source.id)
             source = repo.get("activities", source.entity_id)
         values.update(entity_type=source.entity_type, entity_id=source.entity_id)
-    merged = {**serialize(record), **values}
-    validate_references(db, user, entity, merged)
+    existing = serialize(record)
+    merged = {**existing, **values}
+    validate_references(db, user, entity, merged, existing=existing)
+    if entity in {"contacts", "deals"}:
+        relationship_changes = {
+            key: value
+            for key, value in values.items()
+            if key in {"party_id", "contact_id"} and value != existing.get(key)
+        }
+        if relationship_changes:
+            from app.modules.commercial.service import validate_crm_change
+
+            validate_crm_change(db, user, entity, record_id, relationship_changes)
     if (
         entity in {"contacts", "deals"}
         and values.get("party_id")
@@ -562,6 +597,11 @@ def convert_lead(db: Session, user: Any, lead_id: str, payload: ConvertLead) -> 
         if payload.create_deal
         else None
     )
+    from app.modules.customization.service import copy_compatible_values
+
+    for target_entity, target in (("contacts", contact), ("parties", party), ("deals", deal)):
+        if target is not None:
+            copy_compatible_values(db, user, "leads", lead.id, target_entity, target.id)
     lead.status = "Converted"
     lead.converted_party_id, lead.converted_contact_id, lead.converted_deal_id = (
         party.id,
@@ -1034,6 +1074,7 @@ def merge_leads(
     for module_name, function_name in (
         ("app.modules.files.service", "relink_entity"),
         ("app.modules.engagement.service", "relink_entity"),
+        ("app.modules.intake.service", "relink_entity"),
     ):
         try:
             owner_service = importlib.import_module(module_name)
@@ -1064,6 +1105,9 @@ def merge_leads(
             db.delete(membership)
         else:
             membership.entity_id = target_id
+    from app.modules.customization.service import copy_compatible_values
+
+    copy_compatible_values(db, user, "leads", source_id, "leads", target_id)
     source.deleted_at = now()
     source.version = expected + 1
     source.updated_at = now()
@@ -1120,6 +1164,7 @@ def record_timeline(db: Session, user: Any, entity: str, record_id: str) -> dict
 def archive_record(db: Session, user: Any, entity: str, record_id: str) -> None:
     """Do not leave active relationships pointing at an inaccessible archived master."""
     require_write(user)
+    ensure_write_transaction(db)
     repo = CRMRepository(db, user)
     record = repo.get(entity, record_id, lock=True)
     if entity == "leads" and record.status == "Converted":
@@ -1128,6 +1173,10 @@ def archive_record(db: Session, user: Any, entity: str, record_id: str) -> None:
         raise HTTPException(
             409, "Pipelines cannot be deleted while their stage history is retained."
         )
+    if entity in {"parties", "contacts", "deals"}:
+        from app.modules.commercial.service import validate_crm_change
+
+        validate_crm_change(db, user, entity, record_id, None)
     expected = record.version
     claimed = db.execute(
         update(type(record))

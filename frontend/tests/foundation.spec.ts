@@ -82,13 +82,13 @@ test("real signup, lead conversion, linked records, deal win, task, and support 
   await page
     .getByRole("button", { name: "Complete Send onboarding pack", exact: true })
     .click();
-  await expect(page.getByText("completed", { exact: true })).toBeVisible();
+  await expect(page.getByRole("table").getByText("completed", { exact: true })).toBeVisible();
 
   await page.getByRole("link", { name: "Support", exact: true }).click();
   await page.getByRole("button", { name: "Add ticket", exact: true }).click();
   dialog = page.getByRole("dialog");
   await dialog
-    .getByLabel("Subject", { exact: true })
+    .getByLabel("Subject *", { exact: true })
     .fill("Help with customer onboarding");
   await dialog
     .getByLabel("Description", { exact: true })
@@ -206,7 +206,7 @@ test("invitation link joins the correct workspace with read-only controls", asyn
   );
   expect(rejected.status()).toBe(403);
   await invitedPage.goto(url);
-  await expect(invitedPage.getByRole("alert")).toContainText(
+  await expect(invitedPage.getByRole("alert").filter({ hasText: "expired or has already been used" })).toContainText(
     "expired or has already been used",
   );
   await context.close();
@@ -255,7 +255,7 @@ test("switching accounts clears the previous workspace before new data arrives",
   expect(second.status()).toBe(201);
   await otherContext.close();
   await page.goto("/dashboard");
-  await expect(page.getByText(privateDeal, { exact: true })).toBeVisible();
+  await expect(page.getByRole("link").filter({ hasText: privateDeal })).toBeVisible();
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Welcome back." }),
@@ -283,7 +283,7 @@ test("switching accounts clears the previous workspace before new data arrives",
     await expect(
       page.getByRole("heading", { name: /Good .+, Second\./ }),
     ).toBeVisible();
-    await expect(page.getByText(privateDeal, { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("link").filter({ hasText: privateDeal })).toHaveCount(0);
   } finally {
     releaseResponse();
   }
